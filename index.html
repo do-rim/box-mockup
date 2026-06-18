@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>박스 목업 메이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --card:#FFFFFF;
+    --ink:#3A3354;
+    --ink-soft:#8B82A6;
+    --primary:#FF7FA0;
+    --primary-dark:#F25F87;
+    --mint-bg:#CFF3E2; --mint-ink:#157A53;
+    --peach-bg:#FFE3C6; --peach-ink:#AD5E13;
+    --lav-bg:#E4DBFB; --lav-ink:#6C4FCB;
+    --sky-bg:#D2EAFF; --sky-ink:#1C70B4;
+    --coral-bg:#FFD9E1; --coral-ink:#D14D6E;
+    --line:#ECE6F7;
+    --shadow:0 10px 28px -10px rgba(120,96,180,.22), 0 2px 8px rgba(120,96,180,.08);
+    --shadow-sm:0 4px 14px -6px rgba(120,96,180,.25);
+    --radius:22px;
+    --radius-sm:14px;
+    --font-display:'Fredoka','Noto Sans KR',sans-serif;
+    --font-body:'Inter','Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:linear-gradient(135deg,#F5F1FC 0%,#EEFAF5 48%,#FFF4EC 100%);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app-shell{max-width:1040px;margin:0 auto;padding:28px 16px 60px;}
+
+  header.top{margin-bottom:22px;}
+  header.top h1{
+    font-family:var(--font-display);
+    font-size:clamp(24px,4vw,32px);
+    margin:0 0 .3em;color:var(--ink);font-weight:600;
+  }
+  header.top p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.5;}
+
+  .layout{display:grid;grid-template-columns:1fr;gap:18px;}
+  @media (min-width:880px){
+    .layout{grid-template-columns:1.15fr 1fr;align-items:start;}
+  }
+  .side-stack{display:flex;flex-direction:column;gap:18px;}
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+  }
+
+  .badge{
+    display:inline-flex;align-items:center;
+    padding:5px 14px;border-radius:999px;
+    font-family:var(--font-display);
+    font-size:12.5px;font-weight:600;letter-spacing:.01em;
+    margin-bottom:14px;
+  }
+  .badge-coral{background:var(--coral-bg);color:var(--coral-ink);}
+  .badge-mint{background:var(--mint-bg);color:var(--mint-ink);}
+  .badge-peach{background:var(--peach-bg);color:var(--peach-ink);}
+  .badge-lav{background:var(--lav-bg);color:var(--lav-ink);}
+  .badge-sky{background:var(--sky-bg);color:var(--sky-ink);}
+
+  /* viewer */
+  .viewer-frame{
+    position:relative;width:100%;aspect-ratio:4/3;
+    background:radial-gradient(120% 120% at 50% 15%, #ffffff 0%, #F2EDFB 60%, #EAF6F0 100%);
+    border-radius:16px;overflow:hidden;touch-action:none;cursor:grab;
+  }
+  .viewer-frame.dragging{cursor:grabbing;}
+  canvas{display:block;width:100%;height:100%;}
+  .viewer-hint{
+    position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
+    font-size:12px;color:var(--ink-soft);background:rgba(255,255,255,.85);
+    padding:6px 14px;border-radius:999px;pointer-events:none;
+    box-shadow:0 2px 8px rgba(120,96,180,.12);
+  }
+  .viewer-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+
+  /* buttons */
+  .btn{
+    font-family:var(--font-body);font-weight:700;font-size:14px;
+    padding:11px 20px;border-radius:999px;border:none;
+    background:#fff;color:var(--ink);cursor:pointer;
+    box-shadow:var(--shadow-sm);
+    transition:transform .12s ease,box-shadow .12s ease,background .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0) scale(.98);}
+  .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;}
+  .btn-ghost{background:#fff;color:var(--ink-soft);box-shadow:0 0 0 1.5px var(--line) inset;}
+  input[type=file]{display:none;}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+
+  .help-text{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;line-height:1.5;}
+
+  .dim-row{display:flex;gap:10px;}
+  .dim-field{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
+  .dim-field label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .input-wrap{position:relative;}
+  input[type=number]{
+    width:100%;font-family:var(--font-body);font-feature-settings:"tnum";
+    font-weight:600;font-size:15px;
+    padding:10px 30px 10px 12px;border:none;
+    border-radius:var(--radius-sm);background:#F7F4FC;color:var(--ink);
+  }
+  input[type=number]:focus{background:#fff;box-shadow:0 0 0 2px var(--primary);outline:none;}
+  .input-wrap .unit{
+    position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    font-size:11.5px;color:var(--ink-soft);font-weight:600;
+    pointer-events:none;
+  }
+
+  .row-gap{display:flex;gap:8px;flex-wrap:wrap;}
+
+  .preview-row{
+    display:flex;align-items:center;gap:10px;margin-top:12px;
+    border-radius:var(--radius-sm);padding:8px 10px;background:#F7F4FC;
+  }
+  .preview-thumb{width:32px;height:32px;border-radius:9px;object-fit:cover;flex-shrink:0;}
+  .preview-name{flex:1;font-size:12.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  .layer-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+  .layer-item{
+    display:flex;align-items:center;gap:10px;padding:7px 8px 7px 7px;
+    border-radius:var(--radius-sm);background:#F7F4FC;
+  }
+  .layer-thumb{
+    width:32px;height:32px;border-radius:9px;object-fit:contain;flex-shrink:0;
+    background-image:repeating-conic-gradient(#eee 0 25%, #fff 0 25% 50%);
+    background-size:8px 8px;
+  }
+  .layer-name{flex:1;font-size:13px;color:var(--ink);}
+  .icon-btn{
+    border:none;background:#fff;color:var(--ink-soft);font-size:13px;
+    width:26px;height:26px;border-radius:999px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .icon-btn:hover{color:var(--primary-dark);}
+  .empty-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;}
+
+  /* gallery */
+  .gallery-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));
+    gap:10px;margin-top:6px;
+  }
+  .gallery-item{
+    position:relative;border-radius:var(--radius-sm);overflow:hidden;
+    background:#F7F4FC;box-shadow:var(--shadow-sm);
+  }
+  .gallery-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer;}
+  .gallery-dims{display:block;font-size:10px;color:var(--ink-soft);text-align:center;padding:4px 2px 6px;font-weight:600;}
+  .gallery-remove{
+    position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:999px;
+    border:none;background:rgba(255,255,255,.95);color:var(--ink-soft);font-size:11px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+  .gallery-remove:hover{color:var(--primary-dark);}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="top">
+    <h1>박스 목업 메이커</h1>
+    <p>치수를 입력하고 사진과 스티커를 올려서 박스 디자인을 미리 확인해보세요.</p>
+  </header>
+
+  <div class="layout">
+
+    <!-- viewer -->
+    <div class="card viewer-card">
+      <span class="badge badge-coral">미리보기</span>
+      <div class="viewer-frame" id="viewerFrame">
+        <canvas id="three-canvas"></canvas>
+        <div class="viewer-hint">드래그해서 360도로 둘러보기</div>
+      </div>
+      <div class="viewer-actions">
+        <button class="btn btn-ghost" id="resetViewBtn" type="button">정면으로</button>
+        <button class="btn btn-primary" id="downloadBtn" type="button">3면 이미지로 저장</button>
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div class="side-stack">
+
+      <div class="card">
+        <span class="badge badge-mint">박스 크기 (mm)</span>
+        <div class="dim-row">
+          <div class="dim-field">
+            <label for="dimW">가로</label>
+            <div class="input-wrap">
+              <input type="number" id="dimW" value="200" min="20" max="2000" step="1" inputmode="numeric">
+              <span class="unit">mm</span>
+            </div>
+          </div>
+          <div class="dim-field">
+            <label for="dimD">세로</label>
+            <div class="input-wrap">
+              <input type="number" id="dimD" value="150" min="20" max="2000" step="1" inputmode="numeric">
+              <span class="unit">mm</span>
+            </div>
+          </div>
+          <div class="dim-field">
+            <label for="dimH">높이</label>
+            <div class="input-wrap">
+              <input type="number" id="dimH" value="100" min="20" max="2000" step="1" inputmode="numeric">
+              <span class="unit">mm</span>
+            </div>
+          </div>
+        </div>
+        <p class="help-text">숫자를 바꾸면 박스 크기가 바로 반영돼요.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-peach">배경 사진</span>
+        <div class="row-gap">
+          <button class="btn" id="photoBtn" type="button">사진 업로드</button>
+          <button class="btn btn-ghost" id="removePhotoBtn" type="button" style="display:none;">기본 흰색으로</button>
+        </div>
+        <input type="file" id="photoInput" accept="image/*">
+        <div class="preview-row" id="photoPreviewRow" style="display:none;">
+          <img class="preview-thumb" id="photoPreviewThumb" alt="업로드한 배경 사진">
+          <span class="preview-name" id="photoPreviewName"></span>
+        </div>
+        <p class="help-text">올린 사진은 박스 6면에 모두 동일하게 입혀져요.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-lav">스티커 (PNG)</span>
+        <div class="row-gap">
+          <button class="btn" id="stickerBtn" type="button">스티커 추가</button>
+        </div>
+        <input type="file" id="stickerInput" accept="image/png" multiple>
+        <p class="help-text">박스 위의 스티커를 직접 드래그하면 위치를 옮길 수 있어요.</p>
+        <div class="layer-list" id="layerList">
+          <p class="empty-hint">추가한 스티커가 여기에 표시돼요.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-sky">저장된 목업</span>
+        <div class="gallery-grid" id="galleryList">
+          <p class="gallery-loading empty-hint">불러오는 중...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function clamp(v,min,max){
+    if(min>max){ return (min+max)/2; }
+    return Math.min(Math.max(v,min),max);
+  }
+
+  // ---------- storage helper (Claude artifact storage, falls back to localStorage outside claude.ai) ----------
+  var hasClaudeStorage = !!(window.storage && typeof window.storage.get === 'function');
+
+  function storageGet(key){
+    if(hasClaudeStorage){
+      return window.storage.get(key, false).then(function(r){ return r ? r.value : null; }).catch(function(){ return null; });
+    }
+    try{ return Promise.resolve(localStorage.getItem(key)); }
+    catch(e){ return Promise.resolve(null); }
+  }
+  function storageSet(key, value){
+    if(hasClaudeStorage){
+      return window.storage.set(key, value, false).catch(function(){});
+    }
+    try{ localStorage.setItem(key, value); }catch(e){}
+    return Promise.resolve();
+  }
+
+  // ---------- three.js setup ----------
+  var viewerFrame = document.getElementById('viewerFrame');
+  var canvas = document.getElementById('three-canvas');
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(35, 4/3, 1, 20000);
+  camera.position.set(0,0,800);
+
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true, preserveDrawingBuffer:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  if(renderer.outputEncoding !== undefined){ renderer.outputEncoding = THREE.sRGBEncoding; }
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  var keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+  keyLight.position.set(150,220,260);
+  scene.add(keyLight);
+  var fillLight = new THREE.DirectionalLight(0xffffff, 0.35);
+  fillLight.position.set(-200,80,-150);
+  scene.add(fillLight);
+  var rimLight = new THREE.DirectionalLight(0xffffff, 0.22);
+  rimLight.position.set(0,-150,-200);
+  scene.add(rimLight);
+
+  var boxGroup = new THREE.Group();
+  scene.add(boxGroup);
+
+  function makeBoxMaterial(){
+    return new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.88, metalness:0.02});
+  }
+  var boxMaterials = [makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial()];
+
+  var currentDims = {w:200,h:100,d:150};
+  var boxMesh = new THREE.Mesh(new THREE.BoxGeometry(currentDims.w, currentDims.h, currentDims.d), boxMaterials);
+  boxGroup.add(boxMesh);
+
+  boxGroup.rotation.x = -0.32;
+  boxGroup.rotation.y = -0.55;
+
+  function fitCamera(){
+    var maxDim = Math.max(currentDims.w, currentDims.h, currentDims.d);
+    var dist = maxDim*2.3 + 90;
+    camera.position.set(0,0,dist);
+    camera.updateProjectionMatrix();
+  }
+  fitCamera();
+
+  function render(){ renderer.render(scene, camera); }
+
+  function animate(){
+    requestAnimationFrame(animate);
+    render();
+  }
+  animate();
+
+  var ro = new ResizeObserver(function(){
+    var w = viewerFrame.clientWidth, h = viewerFrame.clientHeight;
+    if(w<=0||h<=0) return;
+    renderer.setSize(w,h,false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  });
+  ro.observe(viewerFrame);
+
+  // ---------- dimension inputs ----------
+  var dimWInput = document.getElementById('dimW');
+  var dimHInput = document.getElementById('dimH');
+  var dimDInput = document.getElementById('dimD');
+
+  function sanitizeDim(raw){
+    var v = parseFloat(raw);
+    if(isNaN(v)) return 50;
+    return clamp(v, 10, 3000);
+  }
+
+  function updateBoxSize(){
+    var w = sanitizeDim(dimWInput.value);
+    var h = sanitizeDim(dimHInput.value);
+    var d = sanitizeDim(dimDInput.value);
+    currentDims = {w:w,h:h,d:d};
+
+    boxMesh.geometry.dispose();
+    boxMesh.geometry = new THREE.BoxGeometry(w,h,d);
+
+    stickers.forEach(function(s){
+      var halfW = w/2 - s.mesh.userData.halfW;
+      var halfH = h/2 - s.mesh.userData.halfH;
+      s.mesh.position.x = clamp(s.mesh.position.x, -halfW, halfW);
+      s.mesh.position.y = clamp(s.mesh.position.y, -halfH, halfH);
+      s.mesh.position.z = d/2 + s.mesh.userData.epsilon;
+    });
+
+    fitCamera();
+  }
+  [dimWInput, dimHInput, dimDInput].forEach(function(inp){
+    inp.addEventListener('input', updateBoxSize);
+  });
+
+  // ---------- photo (background) texture ----------
+  var photoBtn = document.getElementById('photoBtn');
+  var photoInput = document.getElementById('photoInput');
+  var removePhotoBtn = document.getElementById('removePhotoBtn');
+  var photoPreviewRow = document.getElementById('photoPreviewRow');
+  var photoPreviewThumb = document.getElementById('photoPreviewThumb');
+  var photoPreviewName = document.getElementById('photoPreviewName');
+
+  photoBtn.addEventListener('click', function(){ photoInput.click(); });
+
+  photoInput.addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      applyPhotoTexture(ev.target.result);
+      photoPreviewThumb.src = ev.target.result;
+      photoPreviewName.textContent = file.name;
+      photoPreviewRow.style.display = 'flex';
+      removePhotoBtn.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  function applyPhotoTexture(dataUrl){
+    var loader = new THREE.TextureLoader();
+    loader.load(dataUrl, function(tex){
+      if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
+      for(var i=0;i<6;i++){
+        boxMaterials[i].map = tex;
+        boxMaterials[i].color.set(0xffffff);
+        boxMaterials[i].needsUpdate = true;
+      }
+    });
+  }
+
+  removePhotoBtn.addEventListener('click', function(){
+    for(var i=0;i<6;i++){
+      if(boxMaterials[i].map){ boxMaterials[i].map.dispose(); }
+      boxMaterials[i].map = null;
+      boxMaterials[i].color.set(0xffffff);
+      boxMaterials[i].needsUpdate = true;
+    }
+    photoPreviewRow.style.display = 'none';
+    removePhotoBtn.style.display = 'none';
+  });
+
+  // ---------- stickers ----------
+  var stickers = [];
+  var stickerBtn = document.getElementById('stickerBtn');
+  var stickerInput = document.getElementById('stickerInput');
+  var layerListEl = document.getElementById('layerList');
+
+  stickerBtn.addEventListener('click', function(){ stickerInput.click(); });
+
+  stickerInput.addEventListener('change', function(e){
+    Array.prototype.forEach.call(e.target.files, function(f){ addStickerFromFile(f); });
+    e.target.value = '';
+  });
+
+  function addStickerFromFile(file){
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var dataUrl = ev.target.result;
+      var img = new Image();
+      img.onload = function(){
+        var aspect = img.width / img.height;
+        var baseSize = Math.min(currentDims.w, currentDims.h) * 0.28;
+        var pw, ph;
+        if(aspect >= 1){ pw = baseSize; ph = baseSize/aspect; }
+        else { ph = baseSize; pw = baseSize*aspect; }
+
+        var tex = new THREE.TextureLoader().load(dataUrl, function(){ render(); });
+        if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
+
+        var mat = new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false});
+        var geo = new THREE.PlaneGeometry(pw, ph);
+        var mesh = new THREE.Mesh(geo, mat);
+
+        var idx = stickers.length;
+        var epsilon = 0.6 + idx*0.5;
+        mesh.userData.halfW = pw/2;
+        mesh.userData.halfH = ph/2;
+        mesh.userData.epsilon = epsilon;
+        mesh.position.set(0, 0, currentDims.d/2 + epsilon);
+        mesh.renderOrder = 10 + idx;
+
+        boxGroup.add(mesh);
+
+        var layer = {
+          id: 's' + Date.now() + Math.random().toString(16).slice(2),
+          mesh: mesh,
+          thumb: dataUrl,
+          name: '스티커 ' + (stickers.length + 1)
+        };
+        stickers.push(layer);
+        renderLayerList();
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function renderLayerList(){
+    layerListEl.innerHTML = '';
+    if(stickers.length === 0){
+      var p = document.createElement('p');
+      p.className = 'empty-hint';
+      p.textContent = '추가한 스티커가 여기에 표시돼요.';
+      layerListEl.appendChild(p);
+      return;
+    }
+    stickers.forEach(function(s){
+      var row = document.createElement('div');
+      row.className = 'layer-item';
+
+      var img = document.createElement('img');
+      img.className = 'layer-thumb';
+      img.src = s.thumb;
+      img.alt = s.name;
+      row.appendChild(img);
+
+      var name = document.createElement('span');
+      name.className = 'layer-name';
+      name.textContent = s.name;
+      row.appendChild(name);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'icon-btn';
+      removeBtn.type = 'button';
+      removeBtn.textContent = '\u2715';
+      removeBtn.setAttribute('aria-label', s.name + ' 삭제');
+      removeBtn.addEventListener('click', function(){ removeSticker(s.id); });
+      row.appendChild(removeBtn);
+
+      layerListEl.appendChild(row);
+    });
+  }
+
+  function removeSticker(id){
+    var idx = stickers.findIndex(function(s){ return s.id === id; });
+    if(idx === -1) return;
+    var s = stickers[idx];
+    boxGroup.remove(s.mesh);
+    s.mesh.geometry.dispose();
+    if(s.mesh.material.map){ s.mesh.material.map.dispose(); }
+    s.mesh.material.dispose();
+    stickers.splice(idx,1);
+    renderLayerList();
+  }
+
+  // ---------- pointer interaction: rotate box or drag sticker ----------
+  var raycaster = new THREE.Raycaster();
+  var pointerNDC = new THREE.Vector2();
+  var dragPlane = new THREE.Plane();
+  var draggingSticker = null;
+  var isRotating = false;
+  var lastX = 0, lastY = 0;
+
+  function setPointerNDC(evt, rect){
+    pointerNDC.x = ((evt.clientX - rect.left)/rect.width)*2 - 1;
+    pointerNDC.y = -(((evt.clientY - rect.top)/rect.height)*2 - 1);
+  }
+
+  viewerFrame.addEventListener('pointerdown', function(e){
+    var rect = canvas.getBoundingClientRect();
+    setPointerNDC(e, rect);
+    raycaster.setFromCamera(pointerNDC, camera);
+
+    var stickerMeshes = stickers.map(function(s){ return s.mesh; });
+    var hits = stickerMeshes.length ? raycaster.intersectObjects(stickerMeshes, false) : [];
+
+    if(hits.length > 0){
+      draggingSticker = hits[0].object;
+      var worldPos = new THREE.Vector3();
+      draggingSticker.getWorldPosition(worldPos);
+      var worldNormal = new THREE.Vector3(0,0,1).transformDirection(draggingSticker.matrixWorld).normalize();
+      dragPlane.setFromNormalAndCoplanarPoint(worldNormal, worldPos);
+    } else {
+      isRotating = true;
+      lastX = e.clientX; lastY = e.clientY;
+    }
+    viewerFrame.classList.add('dragging');
+    try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+  });
+
+  viewerFrame.addEventListener('pointermove', function(e){
+    if(draggingSticker){
+      var rect = canvas.getBoundingClientRect();
+      setPointerNDC(e, rect);
+      raycaster.setFromCamera(pointerNDC, camera);
+      var ix = new THREE.Vector3();
+      var hit = raycaster.ray.intersectPlane(dragPlane, ix);
+      if(hit){
+        var local = boxGroup.worldToLocal(ix.clone());
+        var halfW = currentDims.w/2 - draggingSticker.userData.halfW;
+        var halfH = currentDims.h/2 - draggingSticker.userData.halfH;
+        draggingSticker.position.x = clamp(local.x, -halfW, halfW);
+        draggingSticker.position.y = clamp(local.y, -halfH, halfH);
+      }
+    } else if(isRotating){
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      boxGroup.rotation.y += dx*0.008;
+      boxGroup.rotation.x = clamp(boxGroup.rotation.x + dy*0.008, -1.5, 1.5);
+      lastX = e.clientX; lastY = e.clientY;
+    }
+  });
+
+  function endDrag(){
+    draggingSticker = null;
+    isRotating = false;
+    viewerFrame.classList.remove('dragging');
+  }
+  viewerFrame.addEventListener('pointerup', endDrag);
+  viewerFrame.addEventListener('pointercancel', endDrag);
+  viewerFrame.addEventListener('pointerleave', function(e){
+    if(e.buttons === 0){ endDrag(); }
+  });
+
+  // ---------- reset view ----------
+  var resetViewBtn = document.getElementById('resetViewBtn');
+  resetViewBtn.addEventListener('click', function(){
+    animateRotationTo(0,0);
+  });
+
+  function animateRotationTo(targetX, targetY){
+    if(reduceMotion){
+      boxGroup.rotation.x = targetX;
+      boxGroup.rotation.y = targetY;
+      return;
+    }
+    var startX = boxGroup.rotation.x, startY = boxGroup.rotation.y;
+    var duration = 320;
+    var t0 = performance.now();
+    function step(now){
+      var t = Math.min((now-t0)/duration, 1);
+      var ease = 1 - Math.pow(1-t, 3);
+      boxGroup.rotation.x = startX + (targetX-startX)*ease;
+      boxGroup.rotation.y = startY + (targetY-startY)*ease;
+      if(t < 1){ requestAnimationFrame(step); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ---------- saved mockup gallery (persistent) ----------
+  var gallery = [];
+  var galleryListEl = document.getElementById('galleryList');
+
+  function renderGallery(){
+    if(gallery.length === 0){
+      galleryListEl.innerHTML = '<p class="empty-hint">저장된 목업이 여기에 쌓여요.</p>';
+      return;
+    }
+    galleryListEl.innerHTML = '';
+    gallery.forEach(function(item){
+      var card = document.createElement('div');
+      card.className = 'gallery-item';
+
+      var img = document.createElement('img');
+      img.src = item.dataUrl;
+      img.alt = item.dimsLabel;
+      img.title = '눌러서 다시 다운로드';
+      img.addEventListener('click', function(){ downloadDataUrl(item.dataUrl, 'box-mockup-' + item.id + '.png'); });
+      card.appendChild(img);
+
+      var label = document.createElement('span');
+      label.className = 'gallery-dims';
+      label.textContent = item.dimsLabel;
+      card.appendChild(label);
+
+      var rm = document.createElement('button');
+      rm.className = 'gallery-remove';
+      rm.type = 'button';
+      rm.textContent = '\u2715';
+      rm.setAttribute('aria-label', '저장된 목업 삭제');
+      rm.addEventListener('click', function(ev){ ev.stopPropagation(); removeGalleryItem(item.id); });
+      card.appendChild(rm);
+
+      galleryListEl.appendChild(card);
+    });
+  }
+
+  function saveGalleryToStorage(){
+    storageSet('mockup-gallery', JSON.stringify(gallery));
+  }
+
+  function addToGallery(dataUrl){
+    var item = {
+      id: 'm' + Date.now() + Math.random().toString(16).slice(2),
+      dataUrl: dataUrl,
+      dimsLabel: Math.round(currentDims.w) + '×' + Math.round(currentDims.d) + '×' + Math.round(currentDims.h) + 'mm'
+    };
+    gallery.unshift(item);
+    renderGallery();
+    saveGalleryToStorage();
+  }
+
+  function removeGalleryItem(id){
+    gallery = gallery.filter(function(g){ return g.id !== id; });
+    renderGallery();
+    saveGalleryToStorage();
+  }
+
+  storageGet('mockup-gallery').then(function(raw){
+    if(raw){
+      try{ gallery = JSON.parse(raw); }catch(e){ gallery = []; }
+    }
+    renderGallery();
+  });
+
+  function downloadDataUrl(dataUrl, filename){
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  // ---------- save 3-face image (downloads + adds to gallery) ----------
+  var downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.addEventListener('click', function(){
+    var prevX = boxGroup.rotation.x, prevY = boxGroup.rotation.y;
+    boxGroup.rotation.x = -0.45;
+    boxGroup.rotation.y = -0.78;
+    render();
+    // render across two more animation frames before reading back pixels,
+    // so the GPU has fully settled on slower devices before we capture.
+    requestAnimationFrame(function(){
+      render();
+      requestAnimationFrame(function(){
+        render();
+        var url = renderer.domElement.toDataURL('image/png');
+        downloadDataUrl(url, 'box-mockup.png');
+        addToGallery(url);
+        boxGroup.rotation.x = prevX;
+        boxGroup.rotation.y = prevY;
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
