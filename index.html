@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -20,6 +20,7 @@
   --fill:rgba(118,118,128,.12);
   --fill2:rgba(118,118,128,.16);
   --blue:#007AFF;
+  --primary:#007AFF;
   --blue-bg:rgba(0,122,255,.10);
   --red:#FF3B30;
   --red-bg:rgba(255,59,48,.10);
@@ -172,7 +173,7 @@ body{
 .viewer-card{background:var(--bg2);border-radius:var(--radius);overflow:hidden;}
 .viewer-frame{
   position:relative;width:100%;aspect-ratio:4/3;
-  background:linear-gradient(160deg,#F8F8FC 0%,#EEEEF3 100%);
+  background:radial-gradient(circle at 50% 42%,#333a43 0%,#1f242b 58%,#12161b 100%);
   overflow:hidden;cursor:grab;
 }
 .viewer-frame.dragging{cursor:grabbing;}
@@ -180,10 +181,10 @@ body{
 .viewer-hint{
   position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
   white-space:nowrap;
-  font-size:11px;color:rgba(0,0,0,.32);
+  font-size:11px;color:rgba(255,255,255,.68);
   font-weight:500;letter-spacing:-.01em;
   pointer-events:none;
-  background:rgba(255,255,255,.5);
+  background:rgba(0,0,0,.28);
   backdrop-filter:blur(6px);
   border-radius:20px;padding:4px 12px;
 }
@@ -248,7 +249,7 @@ body{
   display:flex;flex-direction:column;align-items:center;gap:5px;
   border-radius:10px;overflow:hidden;
 }
-.lib-thumb-btn img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:0.5px solid var(--sep);}
+.lib-thumb-btn img{width:56px;height:56px;object-fit:contain;border-radius:10px;border:0.5px solid var(--sep);background:var(--gray6);padding:4px;}
 .lib-thumb-btn span{font-size:10px;color:var(--label2);max-width:60px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lib-thumb-btn:active{opacity:.6;}
 .lib-empty{font-size:12px;color:var(--label3);padding:8px 14px;}
@@ -300,7 +301,7 @@ body{
   position:relative;border-radius:10px;overflow:hidden;
   background:var(--gray5);aspect-ratio:1;
 }
-.admin-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.admin-thumb img{width:100%;height:100%;object-fit:contain;display:block;background:var(--gray6);padding:6px;}
 .admin-thumb-del{
   position:absolute;top:4px;right:4px;
   width:22px;height:22px;border-radius:50%;
@@ -325,7 +326,7 @@ body{
 .sample-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;padding-top:10px;}
 .sample-card{border-radius:12px;overflow:hidden;background:var(--gray5);cursor:pointer;position:relative;}
 .sample-card:active{opacity:.6;}
-.sample-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.sample-card img{width:100%;aspect-ratio:1;object-fit:contain;display:block;background:var(--gray6);}
 .sample-card-name{padding:5px 7px;font-size:11px;font-weight:600;color:var(--label);}
 .sample-apply-btn{
   position:absolute;top:5px;right:5px;
@@ -450,6 +451,26 @@ body{
 .crop-handle.sw{left:-8px;bottom:-8px;cursor:nesw-resize;}
 .crop-handle.se{right:-8px;bottom:-8px;cursor:nwse-resize;}
 
+.bg-chip-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:10px 14px 14px;}
+.bg-chip{border:1px solid var(--sep);background:var(--bg2);border-radius:10px;padding:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:var(--font);color:var(--label2);font-size:10px;font-weight:600;}
+.bg-chip.is-active{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-bg);color:var(--blue);}
+.bg-chip-swatch{width:100%;aspect-ratio:1.5;border-radius:7px;border:0.5px solid rgba(0,0,0,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);}
+.surface-color-panel{padding:12px 14px 14px;display:grid;gap:12px;}
+.surface-color-picker{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;color:var(--label);}
+.surface-color-picker input{width:48px;height:48px;border:none;background:none;padding:0;cursor:pointer;}
+.surface-color-picker span:last-child{font-size:12px;font-weight:500;color:var(--label2);}
+.surface-cmyk-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+.surface-cmyk-field{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;color:var(--label2);}
+.surface-cmyk-field input{width:100%;border:0.5px solid var(--sep);border-radius:8px;padding:8px 7px;font-family:var(--font);font-size:14px;color:var(--label);background:var(--bg2);text-align:center;}
+.surface-color-value{font-size:12px;color:var(--label2);}
+.surface-print-note{font-size:12px;color:var(--label2);margin:0;line-height:1.45;}
+.admin-form-grid{display:grid;grid-template-columns:1fr;gap:0;border-top:0.5px solid var(--sep);}
+.admin-setting-note{font-size:12px;color:var(--label2);margin:8px 0 0;line-height:1.45;}
+.gallery-item{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:0.5px solid var(--sep);position:relative;}
+.gallery-item:last-child{border-bottom:none;}
+.gallery-item img{width:46px;height:46px;object-fit:cover;border-radius:8px;background:var(--gray6);border:0.5px solid var(--sep);cursor:pointer;}
+.gallery-dims{flex:1;font-size:13px;color:var(--label2);}
+.gallery-remove{border:none;background:none;color:var(--red);font-size:18px;line-height:1;cursor:pointer;padding:4px;}
 /* hidden inputs */
 input[type="file"]{display:none;}
 </style>
@@ -520,7 +541,7 @@ input[type="file"]{display:none;}
             </button>
           </div>
 
-          <div class="viewer-hint">드래그해서 360° 회전 · 스티커 탭하면 편집</div>
+          <div class="viewer-hint">드래그 회전 · 휠/두 손가락 확대 · 스티커 탭하면 편집</div>
         </div>
         <div class="viewer-actions">
           <button class="va-btn va-ghost" id="resetViewBtn" type="button">정면으로</button>
@@ -575,25 +596,25 @@ input[type="file"]{display:none;}
         <!-- Panel: 배경 -->
         <div id="panelBg" class="edit-panel" style="padding:0;">
           <div class="ios-card">
-            <div class="ios-section-label">배경 사진</div>
-            <div class="ios-upload-row" id="photoBtn">
-              <div class="ios-upload-row-icon icon-orange">📷</div>
-              <span class="ios-upload-row-label">사진 업로드</span>
-              <span class="ios-upload-row-chev">›</span>
-            </div>
-            <input type="file" id="photoInput" accept="image/*">
-            <div id="photoPreviewRow" style="display:none;">
-              <div class="photo-preview-cell">
-                <img class="photo-preview-img" id="photoPreviewThumb" alt="">
-                <span class="photo-preview-name" id="photoPreviewName"></span>
-                <button class="photo-remove-btn" id="removePhotoBtn">제거</button>
+            <div class="ios-section-label">박스 표면 색상 (CMYK)</div>
+            <div class="surface-color-panel">
+              <p class="surface-print-note">*인쇄 색상은 CMYK 색상으로 합니다.</p>
+              <label class="surface-color-picker">
+                <input type="color" id="surfaceColorInput" value="#fafafa" aria-label="박스 표면 색상">
+                <span>색상 디스크</span>
+                <span id="surfaceColorValue">#FAFAFA · C0 M0 Y0 K2</span>
+              </label>
+              <div class="surface-cmyk-grid">
+                <label class="surface-cmyk-field">C<input type="number" id="surfaceC" min="0" max="100" step="1" value="0" inputmode="numeric"></label>
+                <label class="surface-cmyk-field">M<input type="number" id="surfaceM" min="0" max="100" step="1" value="0" inputmode="numeric"></label>
+                <label class="surface-cmyk-field">Y<input type="number" id="surfaceY" min="0" max="100" step="1" value="0" inputmode="numeric"></label>
+                <label class="surface-cmyk-field">K<input type="number" id="surfaceK" min="0" max="100" step="1" value="2" inputmode="numeric"></label>
               </div>
             </div>
           </div>
-          <!-- Library quick picks (populated from admin) -->
-          <div class="ios-card" style="margin-top:12px;" id="bgLibCard">
-            <div class="ios-section-label">라이브러리</div>
-            <div class="lib-quick" id="bgLibQuick"><span class="lib-empty">관리 탭에서 배경을 추가하세요</span></div>
+          <div class="ios-card" style="margin-top:12px;">
+            <div class="ios-section-label">배경 색상 (CMYK)</div>
+            <div class="bg-chip-grid" id="bgColorChips"></div>
           </div>
         </div>
 
@@ -647,6 +668,29 @@ input[type="file"]{display:none;}
         <button class="admin-logout-btn" id="adminLogoutBtn">로그아웃</button>
       </div>
 
+      <!-- 기본 박스 설정 -->
+      <div class="ios-card" style="padding:14px 16px;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">기본 박스 설정</div>
+        <div class="admin-form-grid">
+          <div class="ios-cell" style="padding-left:0;padding-right:0;">
+            <span class="ios-cell-label">이름</span>
+            <input type="text" id="adminBoxName" value="박스 목업" maxlength="40" placeholder="박스 이름">
+          </div>
+          <div class="ios-cell" style="padding-left:0;padding-right:0;">
+            <span class="ios-cell-label">가로</span>
+            <div style="display:flex;align-items:center;"><input type="number" id="adminDimW" value="200" min="20" max="2000" step="1" inputmode="numeric"><span class="unit">mm</span></div>
+          </div>
+          <div class="ios-cell" style="padding-left:0;padding-right:0;">
+            <span class="ios-cell-label">세로</span>
+            <div style="display:flex;align-items:center;"><input type="number" id="adminDimD" value="150" min="20" max="2000" step="1" inputmode="numeric"><span class="unit">mm</span></div>
+          </div>
+          <div class="ios-cell" style="padding-left:0;padding-right:0;border-bottom:none;">
+            <span class="ios-cell-label">높이</span>
+            <div style="display:flex;align-items:center;"><input type="number" id="adminDimH" value="100" min="20" max="2000" step="1" inputmode="numeric"><span class="unit">mm</span></div>
+          </div>
+        </div>
+        <p class="admin-setting-note">관리 탭에서 입력한 이름과 치수는 현재 목업과 저장 기본값에 바로 반영됩니다.</p>
+      </div>
       <!-- 스티커 라이브러리 -->
       <div class="ios-card" style="padding:14px 16px;">
         <div style="font-size:15px;font-weight:700;margin-bottom:10px;">스티커 라이브러리</div>
@@ -657,15 +701,6 @@ input[type="file"]{display:none;}
         </div>
       </div>
 
-      <!-- 배경사진 라이브러리 -->
-      <div class="ios-card" style="padding:14px 16px;margin-top:12px;">
-        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">배경사진 라이브러리</div>
-        <button class="admin-add-btn" id="libBgUploadBtn">+ 배경사진 추가</button>
-        <input type="file" id="libBgInput" accept="image/*" multiple>
-        <div class="admin-lib-grid" id="libBgGrid">
-          <p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>
-        </div>
-      </div>
 
       <!-- 샘플 -->
       <div class="ios-card" style="padding:14px 16px;margin-top:12px;margin-bottom:20px;">
@@ -768,14 +803,20 @@ input[type="file"]{display:none;}
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   if(renderer.outputEncoding !== undefined){ renderer.outputEncoding = THREE.sRGBEncoding; }
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-  var keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
-  keyLight.position.set(150,220,260);
+  scene.background = new THREE.Color(0x1f242b);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.58));
+  var keyLight = new THREE.DirectionalLight(0xffffff, 1.05);
+  keyLight.position.set(170,240,280);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(1024,1024);
   scene.add(keyLight);
-  var fillLight = new THREE.DirectionalLight(0xffffff, 0.35);
+  var fillLight = new THREE.DirectionalLight(0xdde8ff, 0.32);
   fillLight.position.set(-200,80,-150);
   scene.add(fillLight);
-  var rimLight = new THREE.DirectionalLight(0xffffff, 0.22);
+  var rimLight = new THREE.DirectionalLight(0xffffff, 0.42);
   rimLight.position.set(0,-150,-200);
   scene.add(rimLight);
 
@@ -783,22 +824,42 @@ input[type="file"]{display:none;}
   scene.add(boxGroup);
 
   function makeBoxMaterial(){
-    return new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.88, metalness:0.02});
+    return new THREE.MeshStandardMaterial({color:0xfafafa, roughness:0.74, metalness:0.01});
   }
   var boxMaterials = [makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial(),makeBoxMaterial()];
 
+  var mockupName = '박스 목업';
   var currentDims = {w:200,h:100,d:150};
   var boxMesh = new THREE.Mesh(new THREE.BoxGeometry(currentDims.w, currentDims.h, currentDims.d), boxMaterials);
+  boxMesh.castShadow = true;
+  boxMesh.receiveShadow = true;
   boxGroup.add(boxMesh);
+  var boxEdges = new THREE.LineSegments(new THREE.EdgesGeometry(boxMesh.geometry), new THREE.LineBasicMaterial({color:0xd8d8d8, transparent:true, opacity:0.32}));
+  boxEdges.renderOrder = 2;
+  boxGroup.add(boxEdges);
+  var groundPlane = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1000), new THREE.ShadowMaterial({color:0x000000, opacity:0.28}));
+  groundPlane.rotation.x = -Math.PI/2;
+  groundPlane.position.y = -currentDims.h/2 - 1;
+  groundPlane.receiveShadow = true;
+  scene.add(groundPlane);
 
   boxGroup.rotation.x = -0.32;
   boxGroup.rotation.y = -0.55;
 
+  var baseCameraDistance = 800;
+  var zoomScale = 1;
+  function applyCameraDistance(){
+    camera.position.set(0,0,baseCameraDistance * zoomScale);
+    camera.updateProjectionMatrix();
+  }
+  function setZoomScale(next){
+    zoomScale = clamp(next, 0.48, 2.4);
+    applyCameraDistance();
+  }
   function fitCamera(){
     var maxDim = Math.max(currentDims.w, currentDims.h, currentDims.d);
-    var dist = maxDim*2.3 + 90;
-    camera.position.set(0,0,dist);
-    camera.updateProjectionMatrix();
+    baseCameraDistance = maxDim*2.45 + 110;
+    applyCameraDistance();
   }
   fitCamera();
 
@@ -839,6 +900,9 @@ input[type="file"]{display:none;}
 
     boxMesh.geometry.dispose();
     boxMesh.geometry = new THREE.BoxGeometry(w,h,d);
+    boxEdges.geometry.dispose();
+    boxEdges.geometry = new THREE.EdgesGeometry(boxMesh.geometry);
+    groundPlane.position.y = -h/2 - 1;
 
     stickers.forEach(function(s){
       orientHolder(s);
@@ -851,54 +915,74 @@ input[type="file"]{display:none;}
     inp.addEventListener('input', updateBoxSize);
   });
 
-  // ---------- photo (background) texture ----------
-  var photoBtn = document.getElementById('photoBtn');
-  var photoInput = document.getElementById('photoInput');
-  var removePhotoBtn = document.getElementById('removePhotoBtn');
-  var photoPreviewRow = document.getElementById('photoPreviewRow');
-  var photoPreviewThumb = document.getElementById('photoPreviewThumb');
-  var photoPreviewName = document.getElementById('photoPreviewName');
+  // ---------- box surface color (CMYK) ----------
+  var currentBgSrc = null;
+  var currentSurfaceCmyk = {c:0,m:0,y:0,k:2};
+  var surfaceColorInput = document.getElementById('surfaceColorInput');
+  var surfaceColorValue = document.getElementById('surfaceColorValue');
+  var surfaceCInput = document.getElementById('surfaceC');
+  var surfaceMInput = document.getElementById('surfaceM');
+  var surfaceYInput = document.getElementById('surfaceY');
+  var surfaceKInput = document.getElementById('surfaceK');
 
-  photoBtn.addEventListener('click', function(){ photoInput.click(); });
-
-  photoInput.addEventListener('change', function(e){ currentBgSrc = null;
-    var file = e.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      applyPhotoTexture(ev.target.result);
-      photoPreviewThumb.src = ev.target.result;
-      photoPreviewName.textContent = file.name;
-      photoPreviewRow.style.display = 'flex';
-      removePhotoBtn.style.display = 'inline-block';
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  });
-
-  function applyPhotoTexture(dataUrl){
-    var loader = new THREE.TextureLoader();
-    loader.load(dataUrl, function(tex){
-      if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
-      for(var i=0;i<6;i++){
-        boxMaterials[i].map = tex;
-        boxMaterials[i].color.set(0xffffff);
-        boxMaterials[i].needsUpdate = true;
-      }
-    });
+  function clampPercent(v){ return Math.round(clamp(parseFloat(v) || 0, 0, 100)); }
+  function componentToHex(v){ var s = clamp(Math.round(v),0,255).toString(16).toUpperCase(); return s.length === 1 ? '0' + s : s; }
+  function rgbToHex(rgb){ return '#' + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b); }
+  function hexToRgb(hex){
+    var clean = String(hex || '').replace('#','');
+    if(clean.length === 3){ clean = clean.split('').map(function(ch){ return ch + ch; }).join(''); }
+    var n = parseInt(clean, 16);
+    if(isNaN(n)) return {r:250,g:250,b:250};
+    return {r:(n>>16)&255, g:(n>>8)&255, b:n&255};
   }
-
-  removePhotoBtn.addEventListener('click', function(){
-    for(var i=0;i<6;i++){
-      if(boxMaterials[i].map){ boxMaterials[i].map.dispose(); }
-      boxMaterials[i].map = null;
-      boxMaterials[i].color.set(0xffffff);
-      boxMaterials[i].needsUpdate = true;
-    }
-    photoPreviewRow.style.display = 'none';
-    removePhotoBtn.style.display = 'none';
+  function cmykToRgb(cmyk){
+    var c = clampPercent(cmyk.c)/100, m = clampPercent(cmyk.m)/100, y = clampPercent(cmyk.y)/100, k = clampPercent(cmyk.k)/100;
+    return {
+      r: 255 * (1-c) * (1-k),
+      g: 255 * (1-m) * (1-k),
+      b: 255 * (1-y) * (1-k)
+    };
+  }
+  function rgbToCmyk(rgb){
+    var r = rgb.r/255, g = rgb.g/255, b = rgb.b/255;
+    var k = 1 - Math.max(r,g,b);
+    if(k >= 0.999){ return {c:0,m:0,y:0,k:100}; }
+    return {
+      c: Math.round((1-r-k)/(1-k)*100),
+      m: Math.round((1-g-k)/(1-k)*100),
+      y: Math.round((1-b-k)/(1-k)*100),
+      k: Math.round(k*100)
+    };
+  }
+  function setSurfaceInputs(cmyk, hex){
+    currentSurfaceCmyk = {c:clampPercent(cmyk.c), m:clampPercent(cmyk.m), y:clampPercent(cmyk.y), k:clampPercent(cmyk.k)};
+    surfaceCInput.value = currentSurfaceCmyk.c;
+    surfaceMInput.value = currentSurfaceCmyk.m;
+    surfaceYInput.value = currentSurfaceCmyk.y;
+    surfaceKInput.value = currentSurfaceCmyk.k;
+    surfaceColorInput.value = hex.toLowerCase();
+    surfaceColorValue.textContent = hex.toUpperCase() + ' · C' + currentSurfaceCmyk.c + ' M' + currentSurfaceCmyk.m + ' Y' + currentSurfaceCmyk.y + ' K' + currentSurfaceCmyk.k;
+  }
+  function applySurfaceColor(hex, cmyk){
+    currentBgSrc = null;
+    boxMaterials.forEach(function(m){
+      if(m.map){ m.map.dispose(); }
+      m.map = null;
+      m.color.set(hex);
+      m.needsUpdate = true;
+    });
+    setSurfaceInputs(cmyk, hex);
+  }
+  function applySurfaceFromCmyk(){
+    var cmyk = {c:surfaceCInput.value, m:surfaceMInput.value, y:surfaceYInput.value, k:surfaceKInput.value};
+    applySurfaceColor(rgbToHex(cmykToRgb(cmyk)), cmyk);
+  }
+  surfaceColorInput.addEventListener('input', function(){
+    var rgb = hexToRgb(surfaceColorInput.value);
+    applySurfaceColor(rgbToHex(rgb), rgbToCmyk(rgb));
   });
-
+  [surfaceCInput, surfaceMInput, surfaceYInput, surfaceKInput].forEach(function(inp){ inp.addEventListener('input', applySurfaceFromCmyk); });
+  applySurfaceColor('#FAFAFA', currentSurfaceCmyk);
   // ---------- stickers ----------
   var stickers = [];
   var stickerBtn = document.getElementById('stickerBtn');
@@ -1392,6 +1476,16 @@ input[type="file"]{display:none;}
   }
 
   viewerFrame.addEventListener('pointerdown', function(e){
+    activePointers[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var pointsAtDown = pointerList();
+    if(pointsAtDown.length === 2){
+      pinchStartDist = getPinchDistance(pointsAtDown);
+      pinchStartZoom = zoomScale;
+      draggingSticker = null;
+      isRotating = false;
+      try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+      return;
+    }
     // bbox 오버레이·페이스 패널·정렬 패널 내부 클릭은 무시
     if(stickerBBox.contains(e.target) || bboxFacePanel.contains(e.target) || bboxAlignPanel.contains(e.target)) return;
 
@@ -1420,6 +1514,13 @@ input[type="file"]{display:none;}
   });
 
   viewerFrame.addEventListener('pointermove', function(e){
+    if(activePointers[e.pointerId]){ activePointers[e.pointerId] = {x:e.clientX, y:e.clientY}; }
+    var pointsForMove = pointerList();
+    if(pointsForMove.length >= 2){
+      var dist = getPinchDistance(pointsForMove);
+      if(pinchStartDist > 0 && dist > 0){ setZoomScale(pinchStartZoom * (pinchStartDist / dist)); }
+      return;
+    }
     if(draggingSticker){
       var rect = canvas.getBoundingClientRect();
       setPointerNDC(e, rect);
@@ -1440,7 +1541,9 @@ input[type="file"]{display:none;}
     }
   });
 
-  function endDrag(){
+  function endDrag(e){
+    if(e && activePointers[e.pointerId]){ delete activePointers[e.pointerId]; }
+    if(pointerList().length < 2){ pinchStartDist = 0; }
     draggingSticker = null;
     isRotating = false;
     viewerFrame.classList.remove('dragging');
@@ -1448,9 +1551,24 @@ input[type="file"]{display:none;}
   viewerFrame.addEventListener('pointerup', endDrag);
   viewerFrame.addEventListener('pointercancel', endDrag);
   viewerFrame.addEventListener('pointerleave', function(e){
-    if(e.buttons === 0){ endDrag(); }
+    if(e.buttons === 0){ endDrag(e); }
   });
 
+
+  viewerFrame.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var factor = Math.exp(e.deltaY * 0.0012);
+    setZoomScale(zoomScale * factor);
+  }, {passive:false});
+
+  var activePointers = {};
+  var pinchStartDist = 0;
+  var pinchStartZoom = 1;
+  function pointerList(){ return Object.keys(activePointers).map(function(k){ return activePointers[k]; }); }
+  function getPinchDistance(points){
+    if(points.length < 2) return 0;
+    return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+  }
   // ---------- reset view ----------
   var resetViewBtn = document.getElementById('resetViewBtn');
   resetViewBtn.addEventListener('click', function(){
@@ -1522,7 +1640,7 @@ input[type="file"]{display:none;}
     var item = {
       id: 'm' + Date.now() + Math.random().toString(16).slice(2),
       dataUrl: dataUrl,
-      dimsLabel: Math.round(currentDims.w) + '×' + Math.round(currentDims.d) + '×' + Math.round(currentDims.h) + 'mm'
+      dimsLabel: mockupName + ' · ' + Math.round(currentDims.w) + '×' + Math.round(currentDims.d) + '×' + Math.round(currentDims.h) + 'mm'
     };
     gallery.unshift(item);
     renderGallery();
@@ -1565,7 +1683,7 @@ input[type="file"]{display:none;}
       requestAnimationFrame(function(){
         render();
         var url = renderer.domElement.toDataURL('image/png');
-        downloadDataUrl(url, 'box-mockup.png');
+        downloadDataUrl(url, (mockupName || 'box-mockup') + '.png');
         addToGallery(url);
         boxGroup.rotation.x = prevX;
         boxGroup.rotation.y = prevY;
@@ -1596,16 +1714,58 @@ input[type="file"]{display:none;}
     document.getElementById('downloadBtnViewer').click();
   });
 
+
+  // ---------- Viewer background color chips ----------
+  var bgColorOptions = [
+    {name:'K90', hex:'#1f242b', cmyk:'C76 M62 Y48 K78'},
+    {name:'K75', hex:'#303640', cmyk:'C68 M55 Y43 K58'},
+    {name:'Cool Gray', hex:'#4b5563', cmyk:'C61 M48 Y40 K28'},
+    {name:'Cyan', hex:'#0077b6', cmyk:'C100 M35 Y0 K29'},
+    {name:'Magenta', hex:'#b5175b', cmyk:'C0 M87 Y50 K29'},
+    {name:'Yellow', hex:'#f4c430', cmyk:'C0 M20 Y80 K4'},
+    {name:'Green', hex:'#087f5b', cmyk:'C94 M0 Y28 K50'},
+    {name:'Warm', hex:'#7c5c42', cmyk:'C0 M26 Y47 K51'},
+    {name:'White', hex:'#f2f2f2', cmyk:'C0 M0 Y0 K5'},
+    {name:'Black', hex:'#05070a', cmyk:'C50 M30 Y0 K96'}
+  ];
+  var activeBgHex = '#1f242b';
+  function setViewerBackground(hex){
+    activeBgHex = hex;
+    scene.background = new THREE.Color(hex);
+    viewerFrame.style.background = 'radial-gradient(circle at 50% 42%,' + hex + ' 0%, #12161b 100%)';
+    Array.prototype.forEach.call(document.querySelectorAll('.bg-chip'), function(btn){
+      btn.classList.toggle('is-active', btn.getAttribute('data-hex') === hex);
+    });
+  }
+  function renderBgColorChips(){
+    var wrap = document.getElementById('bgColorChips');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    bgColorOptions.forEach(function(opt){
+      var btn = document.createElement('button');
+      btn.className = 'bg-chip';
+      btn.type = 'button';
+      btn.setAttribute('data-hex', opt.hex);
+      btn.title = opt.cmyk;
+      btn.innerHTML = '<span class="bg-chip-swatch" style="background:'+opt.hex+'"></span><span>'+opt.name+'</span>';
+      btn.addEventListener('click', function(){ setViewerBackground(opt.hex); });
+      wrap.appendChild(btn);
+    });
+    setViewerBackground(activeBgHex);
+  }
+  renderBgColorChips();
   // ---------- Library storage ----------
   var LIB_KEY = 'mockup_admin_lib_v1';
-  var adminLib = { stickers: [], backgrounds: [], samples: [] };
+  var adminLib = { stickers: [], backgrounds: [], samples: [], boxSettings: { name: '박스 목업', w:200, d:150, h:100 } };
 
   function saveLib(){
     try{ storageSet(LIB_KEY, JSON.stringify(adminLib)); }catch(e){}
   }
   function loadLib(){
     storageGet(LIB_KEY).then(function(v){
-      if(v){ try{ adminLib = JSON.parse(v); }catch(e){} }
+      if(v){ try{ adminLib = Object.assign(adminLib, JSON.parse(v)); }catch(e){} }
+      if(!adminLib.boxSettings){ adminLib.boxSettings = { name: '박스 목업', w:200, d:150, h:100 }; }
+      applyAdminBoxSettings(adminLib.boxSettings);
       renderLibStickers(); renderLibBgs(); renderLibSamples();
       renderQuickStickers(); renderQuickBgs();
     });
@@ -1637,6 +1797,50 @@ input[type="file"]{display:none;}
     document.getElementById('adminUnlocked').style.display = 'none';
   });
 
+
+  // ---------- Admin: default box settings ----------
+  var adminBoxName = document.getElementById('adminBoxName');
+  var adminDimW = document.getElementById('adminDimW');
+  var adminDimD = document.getElementById('adminDimD');
+  var adminDimH = document.getElementById('adminDimH');
+  function setMockupName(name){
+    mockupName = (name || '박스 목업').trim() || '박스 목업';
+    document.querySelector('.ios-nav-title').textContent = mockupName;
+  }
+  function syncAdminBoxInputs(){
+    if(!adminBoxName) return;
+    adminBoxName.value = mockupName;
+    adminDimW.value = Math.round(currentDims.w);
+    adminDimD.value = Math.round(currentDims.d);
+    adminDimH.value = Math.round(currentDims.h);
+  }
+  function applyAdminBoxSettings(settings){
+    if(!settings) return;
+    setMockupName(settings.name);
+    dimWInput.value = sanitizeDim(settings.w || currentDims.w);
+    dimDInput.value = sanitizeDim(settings.d || currentDims.d);
+    dimHInput.value = sanitizeDim(settings.h || currentDims.h);
+    updateBoxSize();
+    syncAdminBoxInputs();
+  }
+  function persistAdminBoxSettings(){
+    setMockupName(adminBoxName.value);
+    adminLib.boxSettings = {
+      name: mockupName,
+      w: sanitizeDim(adminDimW.value),
+      d: sanitizeDim(adminDimD.value),
+      h: sanitizeDim(adminDimH.value)
+    };
+    dimWInput.value = adminLib.boxSettings.w;
+    dimDInput.value = adminLib.boxSettings.d;
+    dimHInput.value = adminLib.boxSettings.h;
+    updateBoxSize();
+    saveLib();
+  }
+  [adminBoxName, adminDimW, adminDimD, adminDimH].forEach(function(inp){
+    inp.addEventListener('input', persistAdminBoxSettings);
+  });
+  syncAdminBoxInputs();
   // ---------- Library: stickers ----------
   document.getElementById('libStickerUploadBtn').addEventListener('click', function(){ document.getElementById('libStickerInput').click(); });
   document.getElementById('libStickerInput').addEventListener('change', function(e){
@@ -1674,42 +1878,9 @@ input[type="file"]{display:none;}
     });
   }
 
-  // ---------- Library: backgrounds ----------
-  document.getElementById('libBgUploadBtn').addEventListener('click', function(){ document.getElementById('libBgInput').click(); });
-  document.getElementById('libBgInput').addEventListener('change', function(e){
-    Array.prototype.forEach.call(e.target.files, function(f){
-      var r = new FileReader();
-      r.onload = function(ev){
-        adminLib.backgrounds.push({ id: 'b'+Date.now()+Math.random().toString(16).slice(2), name: f.name.replace(/\.[^.]+$/,''), dataUrl: ev.target.result });
-        saveLib(); renderLibBgs(); renderQuickBgs();
-      };
-      r.readAsDataURL(f);
-    });
-    e.target.value = '';
-  });
-
-  function renderLibBgs(){
-    var g = document.getElementById('libBgGrid');
-    g.innerHTML = '';
-    if(!adminLib.backgrounds.length){ g.innerHTML='<p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>'; return; }
-    adminLib.backgrounds.forEach(function(item){
-      var d = document.createElement('div'); d.className='admin-thumb';
-      d.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span class="admin-thumb-name">'+item.name+'</span><button class="admin-thumb-del" data-id="'+item.id+'">✕</button>';
-      d.querySelector('.admin-thumb-del').addEventListener('click', function(){ adminLib.backgrounds = adminLib.backgrounds.filter(function(x){return x.id!==item.id;}); saveLib(); renderLibBgs(); renderQuickBgs(); });
-      g.appendChild(d);
-    });
-  }
-  function renderQuickBgs(){
-    var c = document.getElementById('bgLibQuick');
-    c.innerHTML = '';
-    if(!adminLib.backgrounds.length){ c.innerHTML='<span class="lib-empty">관리 탭에서 배경을 추가하세요</span>'; return; }
-    adminLib.backgrounds.forEach(function(item){
-      var btn = document.createElement('button'); btn.className='lib-thumb-btn';
-      btn.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span>'+item.name+'</span>';
-      btn.addEventListener('click', function(){ applyBackgroundDataUrl(item.dataUrl, item.name); });
-      c.appendChild(btn);
-    });
-  }
+  // ---------- Removed background image library ----------
+  function renderLibBgs(){}
+  function renderQuickBgs(){}
 
   // ---------- Library: samples ----------
   document.getElementById('libSampleAddBtn').addEventListener('click', function(){
@@ -1720,7 +1891,9 @@ input[type="file"]{display:none;}
     var thumb = canvas.toDataURL('image/jpeg', 0.6);
     var state = {
       dims: { w: currentDims.w, h: currentDims.h, d: currentDims.d },
-      bgSrc: currentBgSrc || null,
+      bgHex: activeBgHex,
+      surfaceCmyk: currentSurfaceCmyk,
+      name: mockupName,
       stickers: stickers.map(function(s){ return {
         src: s.currentSrc, name: s.name, face: s.face,
         posX: s.mesh.position.x, posY: s.mesh.position.y,
@@ -1757,7 +1930,9 @@ input[type="file"]{display:none;}
       document.getElementById('dimH').value = state.dims.h;
       updateBoxSize();
       // Apply background
-      if(state.bgSrc){ applyBackgroundDataUrl(state.bgSrc, ''); }
+      if(state.name){ setMockupName(state.name); }
+      if(state.bgHex){ setViewerBackground(state.bgHex); }
+      if(state.surfaceCmyk){ applySurfaceColor(rgbToHex(cmykToRgb(state.surfaceCmyk)), state.surfaceCmyk); }
       // Clear existing stickers
       stickers.slice().forEach(function(s){ removeSticker(s.id); });
       // Apply stickers (simplified restore)
@@ -1815,22 +1990,15 @@ input[type="file"]{display:none;}
     img.src = dataUrl;
   }
 
-  // helper: apply background from dataUrl
-  var currentBgSrc = null;
-  function applyBackgroundDataUrl(dataUrl, name){
-    currentBgSrc = dataUrl;
-    var tex = new THREE.TextureLoader().load(dataUrl, function(){ render(); });
-    if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
-    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-    boxMaterials.forEach(function(m){ m.map = tex; m.needsUpdate = true; });
-    if(name){ document.getElementById('photoPreviewName').textContent = name; }
-    document.getElementById('photoPreviewRow').style.display = '';
-    document.getElementById('photoPreviewThumb').src = dataUrl;
-    document.getElementById('removePhotoBtn').style.display = '';
-  }
+
 
 
 })();
 </script>
 </body>
 </html>
+
+
+
+
+
