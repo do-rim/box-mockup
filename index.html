@@ -2,264 +2,729 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>박스 목업 메이커</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>박스 목업</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --card:#FFFFFF;
-    --ink:#3A3354;
-    --ink-soft:#8B82A6;
-    --primary:#FF7FA0;
-    --primary-dark:#F25F87;
-    --mint-bg:#CFF3E2; --mint-ink:#157A53;
-    --peach-bg:#FFE3C6; --peach-ink:#AD5E13;
-    --lav-bg:#E4DBFB; --lav-ink:#6C4FCB;
-    --sky-bg:#D2EAFF; --sky-ink:#1C70B4;
-    --coral-bg:#FFD9E1; --coral-ink:#D14D6E;
-    --line:#ECE6F7;
-    --shadow:0 10px 28px -10px rgba(120,96,180,.22), 0 2px 8px rgba(120,96,180,.08);
-    --shadow-sm:0 4px 14px -6px rgba(120,96,180,.25);
-    --radius:22px;
-    --radius-sm:14px;
-    --font-display:'Fredoka','Noto Sans KR',sans-serif;
-    --font-body:'Inter','Noto Sans KR',sans-serif;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:linear-gradient(135deg,#F5F1FC 0%,#EEFAF5 48%,#FFF4EC 100%);
-    background-attachment:fixed;
-    color:var(--ink);
-    font-family:var(--font-body);
-    -webkit-tap-highlight-color:transparent;
-  }
-  .app-shell{max-width:1040px;margin:0 auto;padding:28px 16px 60px;}
+:root{
+  --bg:#F2F2F7;
+  --bg2:#FFFFFF;
+  --bg3:#F2F2F7;
+  --label:#000;
+  --label2:rgba(60,60,67,.6);
+  --label3:rgba(60,60,67,.3);
+  --sep:rgba(60,60,67,.12);
+  --sep-strong:rgba(60,60,67,.22);
+  --fill:rgba(118,118,128,.12);
+  --fill2:rgba(118,118,128,.16);
+  --blue:#007AFF;
+  --blue-bg:rgba(0,122,255,.10);
+  --red:#FF3B30;
+  --red-bg:rgba(255,59,48,.10);
+  --green:#34C759;
+  --orange:#FF9500;
+  --purple:#AF52DE;
+  --pink:#FF2D55;
+  --teal:#32ADE6;
+  --gray:#8E8E93;
+  --gray4:#D1D1D6;
+  --gray5:#E5E5EA;
+  --gray6:#F2F2F7;
+  --nav-h:52px;
+  --tab-h:56px;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Text','Noto Sans KR',sans-serif;
+  --font-display:-apple-system,BlinkMacSystemFont,'SF Pro Display','Noto Sans KR',sans-serif;
+  --radius:16px;
+  --radius-sm:10px;
+  --seg-h:34px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background:var(--bg);color:var(--label);
+  font-family:var(--font);font-size:15px;line-height:1.4;
+  padding-top:var(--nav-h);padding-bottom:calc(var(--tab-h) + var(--safe-b));
+}
 
-  header.top{margin-bottom:22px;}
-  header.top h1{
-    font-family:var(--font-display);
-    font-size:clamp(24px,4vw,32px);
-    margin:0 0 .3em;color:var(--ink);font-weight:600;
-  }
-  header.top p{margin:0;color:var(--ink-soft);font-size:14px;line-height:1.5;}
+/* ── Nav bar ── */
+.ios-nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:center;
+  padding:0 16px;
+  background:rgba(242,242,247,.88);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:0.5px solid var(--sep);
+}
+.ios-nav-title{
+  font-family:var(--font-display);font-size:17px;font-weight:600;
+  letter-spacing:-.02em;color:var(--label);
+}
+.ios-nav-side{position:absolute;top:0;bottom:0;display:flex;align-items:center;}
+.ios-nav-side.left{left:16px;}
+.ios-nav-side.right{right:16px;}
+.ios-nav-btn{
+  border:none;background:none;color:var(--blue);
+  font-family:var(--font);font-size:17px;padding:6px 0;cursor:pointer;
+}
+.ios-nav-btn:active{opacity:.5;}
 
-  .layout{display:grid;grid-template-columns:1fr;gap:18px;}
-  @media (min-width:880px){
-    .layout{grid-template-columns:1.15fr 1fr;align-items:start;}
-  }
-  .side-stack{display:flex;flex-direction:column;gap:18px;}
+/* ── Tab bar ── */
+.ios-tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  height:calc(var(--tab-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  display:flex;
+  background:rgba(242,242,247,.88);
+  backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-top:0.5px solid var(--sep);
+}
+.tab-item{
+  flex:1;border:none;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 0 4px;color:var(--gray);
+  transition:color .15s;
+}
+.tab-item.active{color:var(--blue);}
+.tab-item svg{width:24px;height:24px;}
+.tab-item span{font-size:10px;font-weight:500;letter-spacing:-.01em;}
 
-  .card{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:20px;
-  }
+/* ── Content ── */
+.ios-content{max-width:1080px;margin:0 auto;padding:0;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
-  .badge{
-    display:inline-flex;align-items:center;
-    padding:5px 14px;border-radius:999px;
-    font-family:var(--font-display);
-    font-size:12.5px;font-weight:600;letter-spacing:.01em;
-    margin-bottom:14px;
-  }
-  .badge-coral{background:var(--coral-bg);color:var(--coral-ink);}
-  .badge-mint{background:var(--mint-bg);color:var(--mint-ink);}
-  .badge-peach{background:var(--peach-bg);color:var(--peach-ink);}
-  .badge-lav{background:var(--lav-bg);color:var(--lav-ink);}
-  .badge-sky{background:var(--sky-bg);color:var(--sky-ink);}
+/* ── Layout: desktop 2-col ── */
+.editor-layout{padding:14px 14px 0;display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:820px){
+  .editor-layout{grid-template-columns:1.2fr 1fr;align-items:start;}
+}
 
-  /* viewer */
-  .viewer-frame{
-    position:relative;width:100%;aspect-ratio:4/3;
-    background:radial-gradient(120% 120% at 50% 15%, #ffffff 0%, #F2EDFB 60%, #EAF6F0 100%);
-    border-radius:16px;overflow:hidden;touch-action:none;cursor:grab;
-  }
-  .viewer-frame.dragging{cursor:grabbing;}
-  canvas{display:block;width:100%;height:100%;}
-  .viewer-hint{
-    position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
-    font-size:12px;color:var(--ink-soft);background:rgba(255,255,255,.85);
-    padding:6px 14px;border-radius:999px;pointer-events:none;
-    box-shadow:0 2px 8px rgba(120,96,180,.12);
-  }
-  .viewer-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+/* ── Cards (iOS grouped) ── */
+.ios-card{
+  background:var(--bg2);border-radius:var(--radius);
+  overflow:hidden;
+}
+.ios-card+.ios-card{margin-top:10px;}
 
-  /* buttons */
-  .btn{
-    font-family:var(--font-body);font-weight:700;font-size:14px;
-    padding:11px 20px;border-radius:999px;border:none;
-    background:#fff;color:var(--ink);cursor:pointer;
-    box-shadow:var(--shadow-sm);
-    transition:transform .12s ease,box-shadow .12s ease,background .15s ease;
-  }
-  .btn:hover{transform:translateY(-1px);}
-  .btn:active{transform:translateY(0) scale(.98);}
-  .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;}
-  .btn-ghost{background:#fff;color:var(--ink-soft);box-shadow:0 0 0 1.5px var(--line) inset;}
-  input[type=file]{display:none;}
-  button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+/* ── Section labels ── */
+.ios-section-label{
+  padding:6px 16px 7px;
+  font-size:13px;font-weight:500;color:var(--label2);
+  letter-spacing:.01em;text-transform:none;
+}
 
-  .help-text{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;line-height:1.5;}
+/* ── iOS List cells ── */
+.ios-cell{
+  display:flex;align-items:center;
+  padding:11px 16px;
+  border-bottom:0.5px solid var(--sep);
+  min-height:44px;
+}
+.ios-cell:last-child{border-bottom:none;}
+.ios-cell-label{font-size:15px;color:var(--label);flex-shrink:0;}
+.ios-cell-value{
+  flex:1;text-align:right;
+  font-size:15px;color:var(--label2);
+}
+.ios-cell input[type="number"]{
+  border:none;outline:none;background:none;
+  font-family:var(--font);font-size:15px;
+  color:var(--blue);text-align:right;width:90px;
+  -moz-appearance:textfield;
+}
+.ios-cell input[type="number"]::-webkit-inner-spin-button,
+.ios-cell input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;}
+.ios-cell .unit{font-size:14px;color:var(--label2);margin-left:4px;}
 
-  .dim-row{display:flex;gap:10px;}
-  .dim-field{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
-  .dim-field label{font-size:12px;color:var(--ink-soft);font-weight:600;}
-  .input-wrap{position:relative;}
-  input[type=number]{
-    width:100%;font-family:var(--font-body);font-feature-settings:"tnum";
-    font-weight:600;font-size:15px;
-    padding:10px 30px 10px 12px;border:none;
-    border-radius:var(--radius-sm);background:#F7F4FC;color:var(--ink);
-  }
-  input[type=number]:focus{background:#fff;box-shadow:0 0 0 2px var(--primary);outline:none;}
-  .input-wrap .unit{
-    position:absolute;right:10px;top:50%;transform:translateY(-50%);
-    font-size:11.5px;color:var(--ink-soft);font-weight:600;
-    pointer-events:none;
-  }
+/* ── Segmented control ── */
+.ios-segment{
+  display:flex;gap:0;
+  background:var(--fill);
+  border-radius:10px;padding:2px;
+  margin:14px 14px 0;
+}
+.seg-btn{
+  flex:1;border:none;cursor:pointer;
+  height:var(--seg-h);border-radius:8px;
+  font-family:var(--font);font-size:13.5px;font-weight:500;
+  color:var(--label2);background:none;
+  transition:background .18s,color .18s,box-shadow .18s;
+  letter-spacing:-.01em;
+}
+.seg-btn.active{
+  background:var(--bg2);
+  box-shadow:0 1px 4px rgba(0,0,0,.12),0 0 0 0.5px rgba(0,0,0,.04);
+  color:var(--label);
+  font-weight:600;
+}
 
-  .row-gap{display:flex;gap:8px;flex-wrap:wrap;}
+/* ── Edit panels ── */
+.edit-panel{display:none;padding:14px 14px 0;}
+.edit-panel.active{display:block;}
 
-  .preview-row{
-    display:flex;align-items:center;gap:10px;margin-top:12px;
-    border-radius:var(--radius-sm);padding:8px 10px;background:#F7F4FC;
-  }
-  .preview-thumb{width:32px;height:32px;border-radius:9px;object-fit:cover;flex-shrink:0;}
-  .preview-name{flex:1;font-size:12.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* ── Viewer ── */
+.viewer-card{background:var(--bg2);border-radius:var(--radius);overflow:hidden;}
+.viewer-frame{
+  position:relative;width:100%;aspect-ratio:4/3;
+  background:linear-gradient(160deg,#F8F8FC 0%,#EEEEF3 100%);
+  overflow:hidden;cursor:grab;
+}
+.viewer-frame.dragging{cursor:grabbing;}
+.viewer-frame canvas{display:block;width:100%!important;height:100%!important;}
+.viewer-hint{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;
+  font-size:11px;color:rgba(0,0,0,.32);
+  font-weight:500;letter-spacing:-.01em;
+  pointer-events:none;
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(6px);
+  border-radius:20px;padding:4px 12px;
+}
+.viewer-actions{
+  display:flex;gap:8px;padding:10px 12px;
+  border-top:0.5px solid var(--sep);
+}
+.viewer-actions .va-btn{
+  flex:1;border:none;cursor:pointer;border-radius:10px;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  padding:10px 0;
+  transition:opacity .1s;
+}
+.viewer-actions .va-btn:active{opacity:.6;}
+.va-ghost{background:var(--fill);color:var(--blue);}
+.va-primary{background:var(--blue);color:#fff;}
 
-  .layer-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-  .layer-item{
-    display:flex;align-items:center;gap:10px;padding:7px 8px 7px 7px;
-    border-radius:var(--radius-sm);background:#F7F4FC;
-  }
-  .layer-thumb{
-    width:32px;height:32px;border-radius:9px;object-fit:contain;flex-shrink:0;
-    background-image:repeating-conic-gradient(#eee 0 25%, #fff 0 25% 50%);
-    background-size:8px 8px;
-  }
-  .layer-name{flex:1;font-size:13px;color:var(--ink);}
-  .icon-btn{
-    border:none;background:#fff;color:var(--ink-soft);font-size:13px;
-    width:26px;height:26px;border-radius:999px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  }
-  .icon-btn:hover{color:var(--primary-dark);}
-  .empty-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0;}
+/* ── Upload buttons (iOS tappable row) ── */
+.ios-upload-row{
+  display:flex;align-items:center;
+  padding:11px 16px;min-height:44px;
+  cursor:pointer;
+  border-bottom:0.5px solid var(--sep);
+}
+.ios-upload-row:last-child{border-bottom:none;}
+.ios-upload-row:active{background:var(--fill);}
+.ios-upload-row-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;margin-right:12px;flex-shrink:0;
+}
+.icon-blue{background:var(--blue);color:#fff;}
+.icon-orange{background:var(--orange);color:#fff;}
+.icon-purple{background:var(--purple);color:#fff;}
+.icon-green{background:var(--green);color:#fff;}
+.ios-upload-row-label{font-size:15px;color:var(--label);flex:1;}
+.ios-upload-row-chev{color:var(--gray);font-size:14px;}
 
-  /* gallery */
-  .gallery-grid{
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));
-    gap:10px;margin-top:6px;
-  }
-  .gallery-item{
-    position:relative;border-radius:var(--radius-sm);overflow:hidden;
-    background:#F7F4FC;box-shadow:var(--shadow-sm);
-  }
-  .gallery-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer;}
-  .gallery-dims{display:block;font-size:10px;color:var(--ink-soft);text-align:center;padding:4px 2px 6px;font-weight:600;}
-  .gallery-remove{
-    position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:999px;
-    border:none;background:rgba(255,255,255,.95);color:var(--ink-soft);font-size:11px;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 1px 4px rgba(0,0,0,.18);
-  }
-  .gallery-remove:hover{color:var(--primary-dark);}
+/* ── Layer list ── */
+.layer-list{padding:0 0 4px;}
+.layer-item{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 16px;border-bottom:0.5px solid var(--sep);
+}
+.layer-item:last-child{border-bottom:none;}
+.layer-thumb{width:36px;height:36px;object-fit:contain;border-radius:6px;background:var(--gray6);}
+.layer-name{flex:1;font-size:14px;color:var(--label);}
+.layer-del{border:none;background:none;color:var(--red);font-size:18px;padding:4px;cursor:pointer;line-height:1;}
+.empty-hint{font-size:13px;color:var(--label2);padding:14px 16px;margin:0;}
+
+/* Photo preview */
+.photo-preview-cell{display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:0.5px solid var(--sep);}
+.photo-preview-img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:0.5px solid var(--sep);}
+.photo-preview-name{font-size:13px;color:var(--label2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.photo-remove-btn{border:none;background:none;color:var(--red);font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;padding:4px;white-space:nowrap;}
+
+/* Quick-apply library (thumbnails) */
+.lib-quick{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;scrollbar-width:none;}
+.lib-quick::-webkit-scrollbar{display:none;}
+.lib-thumb-btn{
+  flex-shrink:0;width:56px;border:none;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  border-radius:10px;overflow:hidden;
+}
+.lib-thumb-btn img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:0.5px solid var(--sep);}
+.lib-thumb-btn span{font-size:10px;color:var(--label2);max-width:60px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lib-thumb-btn:active{opacity:.6;}
+.lib-empty{font-size:12px;color:var(--label3);padding:8px 14px;}
+
+/* ── Admin tab ── */
+.admin-section{padding:14px;}
+.admin-locked{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;gap:14px;padding:40px 24px;text-align:center;
+}
+.lock-icon{font-size:52px;line-height:1;}
+.admin-locked h2{font-family:var(--font-display);font-size:22px;font-weight:700;margin:0;letter-spacing:-.02em;}
+.admin-locked p{font-size:15px;color:var(--label2);margin:0;}
+.admin-pw-wrap{
+  display:flex;gap:0;width:100%;max-width:300px;
+  border-radius:12px;overflow:hidden;
+  border:0.5px solid var(--gray4);
+  background:var(--bg2);
+}
+.admin-pw-wrap input{
+  flex:1;border:none;outline:none;background:none;
+  font-family:var(--font);font-size:17px;
+  padding:13px 14px;color:var(--label);
+}
+.admin-pw-wrap input::placeholder{color:var(--label3);}
+.admin-pw-btn{
+  border:none;background:var(--blue);color:#fff;
+  font-family:var(--font);font-size:15px;font-weight:600;
+  padding:0 18px;cursor:pointer;
+}
+.admin-pw-btn:active{opacity:.7;}
+.admin-pw-error{font-size:13px;color:var(--red);min-height:18px;margin:0;}
+.admin-logout-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--bg2);border-radius:var(--radius);
+  margin-bottom:14px;
+}
+.admin-logout-row span{font-size:15px;font-weight:600;}
+.admin-logout-btn{
+  border:none;background:var(--red-bg);color:var(--red);
+  font-family:var(--font);font-size:13.5px;font-weight:600;
+  border-radius:8px;padding:7px 14px;cursor:pointer;
+}
+.admin-lib-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;
+  padding:12px 0 0;
+}
+.admin-thumb{
+  position:relative;border-radius:10px;overflow:hidden;
+  background:var(--gray5);aspect-ratio:1;
+}
+.admin-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.admin-thumb-del{
+  position:absolute;top:4px;right:4px;
+  width:22px;height:22px;border-radius:50%;
+  border:none;background:rgba(0,0,0,.55);color:#fff;
+  font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.admin-thumb-name{
+  position:absolute;bottom:0;left:0;right:0;
+  font-size:10px;color:#fff;padding:3px 5px;
+  background:linear-gradient(transparent,rgba(0,0,0,.5));
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.admin-add-btn{
+  width:100%;border:1.5px dashed var(--gray4);
+  border-radius:var(--radius-sm);padding:14px;
+  background:none;color:var(--blue);
+  font-family:var(--font);font-size:14px;font-weight:600;
+  cursor:pointer;margin-bottom:10px;
+}
+.admin-add-btn:active{background:var(--fill);}
+.sample-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;padding-top:10px;}
+.sample-card{border-radius:12px;overflow:hidden;background:var(--gray5);cursor:pointer;position:relative;}
+.sample-card:active{opacity:.6;}
+.sample-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.sample-card-name{padding:5px 7px;font-size:11px;font-weight:600;color:var(--label);}
+.sample-apply-btn{
+  position:absolute;top:5px;right:5px;
+  border:none;background:var(--blue);color:#fff;
+  border-radius:6px;font-size:10px;font-weight:700;
+  padding:3px 7px;cursor:pointer;
+}
+
+/* ── BBox overlay (minimal iOS style) ── */
+.sticker-bbox{position:absolute;inset:0;pointer-events:none;z-index:20;display:none;}
+.sticker-bbox.active{display:block;}
+.bbox-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;}
+
+/* corner handles: tiny circles */
+.bbox-h{
+  position:absolute;width:22px;height:22px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.95);
+  box-shadow:0 1px 5px rgba(0,0,0,.22);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:11px;pointer-events:auto;touch-action:none;color:var(--label);
+  transform:translate(-50%,-50%);
+  transition:transform .1s;
+}
+.bbox-h:active{transform:translate(-50%,-50%) scale(.85);}
+.bbox-del{background:var(--red);color:#fff;font-size:10px;}
+.bbox-rsz{
+  cursor:se-resize;border-radius:4px;width:18px;height:18px;
+  background:rgba(255,255,255,.92);
+}
+/* edge handles hidden — minimal */
+.bbox-edge{display:none;}
+
+/* face selector & align panel */
+.bbox-face-panel{
+  position:absolute;top:10px;left:50%;
+  transform:translateX(-50%) translateY(-4px);
+  display:none;gap:2px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-radius:999px;padding:3px 6px;
+  box-shadow:0 2px 12px rgba(0,0,0,.14);
+  pointer-events:auto;opacity:0;transition:opacity .16s,transform .16s;
+}
+.bbox-face-panel.active{display:flex;opacity:1;transform:translateX(-50%) translateY(0);}
+.sp-face-btn{
+  border:none;background:none;color:var(--label2);
+  font-family:var(--font);font-size:12px;font-weight:600;
+  padding:5px 8px;border-radius:999px;cursor:pointer;
+}
+.sp-face-btn:hover{background:var(--fill);}
+.sp-face-btn.is-active{background:var(--blue);color:#fff;}
+
+.bbox-align-panel{
+  position:absolute;right:10px;top:50%;
+  transform:translateY(-50%) translateX(4px);
+  display:none;flex-direction:column;gap:2px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-radius:14px;padding:5px 4px;
+  box-shadow:0 2px 12px rgba(0,0,0,.14);
+  pointer-events:auto;opacity:0;transition:opacity .16s,transform .16s;
+}
+.bbox-align-panel.active{display:flex;opacity:1;transform:translateY(-50%) translateX(0);}
+.align-btn{
+  border:none;background:none;width:32px;height:32px;
+  border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--label2);transition:background .1s,color .1s;
+}
+.align-btn:hover{background:var(--fill);color:var(--blue);}
+.align-btn:active{transform:scale(.85);}
+
+/* ── Crop modal ── */
+.crop-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.50);
+  display:none;align-items:center;justify-content:center;
+  z-index:200;padding:20px;
+}
+.crop-overlay.active{display:flex;}
+.crop-modal{
+  background:var(--bg2);border-radius:var(--radius);
+  width:100%;max-width:540px;overflow:hidden;
+}
+.crop-modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:0.5px solid var(--sep);
+}
+.crop-modal-head h3{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em;}
+.crop-modal-body{padding:14px 16px;}
+.crop-modal-body p{margin:0 0 12px;font-size:13px;color:var(--label2);}
+.crop-modal-foot{
+  display:flex;gap:0;
+  border-top:0.5px solid var(--sep);
+}
+.crop-modal-foot button{
+  flex:1;border:none;background:none;cursor:pointer;
+  font-family:var(--font);font-size:16px;
+  padding:14px;
+  border-right:0.5px solid var(--sep);
+  color:var(--blue);
+}
+.crop-modal-foot button:last-child{border-right:none;font-weight:700;}
+.crop-modal-foot button.crop-reset{color:var(--label2);}
+.crop-modal-foot button:active{background:var(--fill);}
+.crop-image-wrap{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  background-image:repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%);
+  background-size:12px 12px;
+  border-radius:10px;overflow:hidden;user-select:none;width:fit-content;margin:0 auto;
+}
+.crop-image-wrap img{display:block;max-width:100%;max-height:50vh;pointer-events:none;}
+.crop-rect{
+  position:absolute;border:2px solid var(--blue);
+  box-shadow:0 0 0 9999px rgba(0,0,0,.42);cursor:move;touch-action:none;
+}
+.crop-handle{
+  position:absolute;width:14px;height:14px;background:#fff;
+  border:2px solid var(--blue);border-radius:50%;touch-action:none;
+}
+.crop-handle.nw{left:-8px;top:-8px;cursor:nwse-resize;}
+.crop-handle.ne{right:-8px;top:-8px;cursor:nesw-resize;}
+.crop-handle.sw{left:-8px;bottom:-8px;cursor:nesw-resize;}
+.crop-handle.se{right:-8px;bottom:-8px;cursor:nwse-resize;}
+
+/* hidden inputs */
+input[type="file"]{display:none;}
 </style>
 </head>
 <body>
-<div class="app-shell">
 
-  <header class="top">
-    <h1>박스 목업 메이커</h1>
-    <p>치수를 입력하고 사진과 스티커를 올려서 박스 디자인을 미리 확인해보세요.</p>
-  </header>
+<!-- Nav bar -->
+<nav class="ios-nav">
+  <div class="ios-nav-title">박스 목업</div>
+  <div class="ios-nav-side right">
+    <button class="ios-nav-btn" id="downloadBtn">저장</button>
+  </div>
+</nav>
 
-  <div class="layout">
+<div class="ios-content">
 
-    <!-- viewer -->
-    <div class="card viewer-card">
-      <span class="badge badge-coral">미리보기</span>
-      <div class="viewer-frame" id="viewerFrame">
-        <canvas id="three-canvas"></canvas>
-        <div class="viewer-hint">드래그해서 360도로 둘러보기</div>
+  <!-- ── 편집 탭 ── -->
+  <div id="tabEdit" class="tab-panel active">
+    <div class="editor-layout">
+
+      <!-- Viewer -->
+      <div class="viewer-card">
+        <div class="viewer-frame" id="viewerFrame">
+          <canvas id="three-canvas"></canvas>
+
+          <!-- Bounding box overlay -->
+          <div id="stickerBBox" class="sticker-bbox">
+            <svg id="bboxSvg" class="bbox-svg">
+              <polygon id="bboxPoly" fill="none" stroke="rgba(0,122,255,.55)" stroke-width="1.2" stroke-dasharray="4 3" stroke-linejoin="round"/>
+            </svg>
+            <button id="bboxDelete" class="bbox-h bbox-del" type="button" title="삭제">✕</button>
+            <button id="bboxRotate" class="bbox-h"          type="button" title="회전">↺</button>
+            <button id="bboxCrop"   class="bbox-h"          type="button" title="자르기">✂</button>
+            <div    id="bboxResize" class="bbox-h bbox-rsz" title="크기조절">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M1 9L9 1M6 9h3V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <button id="bboxEdgeT" class="bbox-edge" type="button">↑</button>
+            <button id="bboxEdgeB" class="bbox-edge" type="button">↓</button>
+            <button id="bboxEdgeL" class="bbox-edge" type="button">←</button>
+            <button id="bboxEdgeR" class="bbox-edge" type="button">→</button>
+          </div>
+
+          <!-- Face selector -->
+          <div id="bboxFacePanel" class="bbox-face-panel">
+            <button class="sp-face-btn" data-face="front"  type="button">앞</button>
+            <button class="sp-face-btn" data-face="back"   type="button">뒤</button>
+            <button class="sp-face-btn" data-face="top"    type="button">위</button>
+            <button class="sp-face-btn" data-face="bottom" type="button">아래</button>
+            <button class="sp-face-btn" data-face="left"   type="button">왼쪽</button>
+            <button class="sp-face-btn" data-face="right"  type="button">오른쪽</button>
+          </div>
+
+          <!-- Align panel -->
+          <div id="bboxAlignPanel" class="bbox-align-panel">
+            <button id="alignLeft" class="align-btn" type="button" title="왼쪽 정렬">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="2" y1="2" x2="2" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="4" y="3.5" width="10" height="3" rx="1.2" fill="currentColor"/><rect x="4" y="8" width="6" height="3" rx="1.2" fill="currentColor"/><rect x="4" y="12.5" width="8" height="3" rx="1.2" fill="currentColor"/></svg>
+            </button>
+            <button id="alignCenterH" class="align-btn" type="button" title="가로 중앙">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="9" y1="2" x2="9" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 1.5"/><rect x="3" y="3.5" width="12" height="3" rx="1.2" fill="currentColor"/><rect x="5" y="8" width="8" height="3" rx="1.2" fill="currentColor"/><rect x="4" y="12.5" width="10" height="3" rx="1.2" fill="currentColor"/></svg>
+            </button>
+            <button id="alignRight" class="align-btn" type="button" title="오른쪽 정렬">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="16" y1="2" x2="16" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="4" y="3.5" width="10" height="3" rx="1.2" fill="currentColor"/><rect x="8" y="8" width="6" height="3" rx="1.2" fill="currentColor"/><rect x="6" y="12.5" width="8" height="3" rx="1.2" fill="currentColor"/></svg>
+            </button>
+            <button id="alignMiddle" class="align-btn" type="button" title="세로 중앙">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="2" y1="9" x2="16" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 1.5"/><rect x="3.5" y="3" width="3" height="12" rx="1.2" fill="currentColor"/><rect x="8" y="5" width="3" height="8" rx="1.2" fill="currentColor"/><rect x="12.5" y="4" width="3" height="10" rx="1.2" fill="currentColor"/></svg>
+            </button>
+          </div>
+
+          <div class="viewer-hint">드래그해서 360° 회전 · 스티커 탭하면 편집</div>
+        </div>
+        <div class="viewer-actions">
+          <button class="va-btn va-ghost" id="resetViewBtn" type="button">정면으로</button>
+          <button class="va-btn va-primary" id="downloadBtnViewer" type="button">3면 저장</button>
+        </div>
       </div>
-      <div class="viewer-actions">
-        <button class="btn btn-ghost" id="resetViewBtn" type="button">정면으로</button>
-        <button class="btn btn-primary" id="downloadBtn" type="button">3면 이미지로 저장</button>
+
+      <!-- Side controls -->
+      <div id="sideControls">
+        <!-- Segmented control -->
+        <div class="ios-segment" id="editSegment" style="margin:0 0 12px;">
+          <button class="seg-btn active" data-panel="box">박스</button>
+          <button class="seg-btn" data-panel="bg">배경</button>
+          <button class="seg-btn" data-panel="sticker">스티커</button>
+        </div>
+
+        <!-- Panel: 박스 크기 -->
+        <div id="panelBox" class="edit-panel active" style="padding:0;">
+          <div class="ios-card">
+            <div class="ios-section-label">박스 크기 (mm)</div>
+            <div class="ios-cell">
+              <span class="ios-cell-label">가로</span>
+              <div style="display:flex;align-items:center;">
+                <input type="number" id="dimW" value="200" min="20" max="2000" step="1" inputmode="numeric">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <div class="ios-cell">
+              <span class="ios-cell-label">세로</span>
+              <div style="display:flex;align-items:center;">
+                <input type="number" id="dimD" value="150" min="20" max="2000" step="1" inputmode="numeric">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+            <div class="ios-cell">
+              <span class="ios-cell-label">높이</span>
+              <div style="display:flex;align-items:center;">
+                <input type="number" id="dimH" value="100" min="20" max="2000" step="1" inputmode="numeric">
+                <span class="unit">mm</span>
+              </div>
+            </div>
+          </div>
+          <!-- 저장된 목업 gallery -->
+          <div class="ios-card" style="margin-top:12px;">
+            <div class="ios-section-label">저장된 목업</div>
+            <div class="layer-list" id="galleryList">
+              <p class="empty-hint">저장된 목업이 없어요.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel: 배경 -->
+        <div id="panelBg" class="edit-panel" style="padding:0;">
+          <div class="ios-card">
+            <div class="ios-section-label">배경 사진</div>
+            <div class="ios-upload-row" id="photoBtn">
+              <div class="ios-upload-row-icon icon-orange">📷</div>
+              <span class="ios-upload-row-label">사진 업로드</span>
+              <span class="ios-upload-row-chev">›</span>
+            </div>
+            <input type="file" id="photoInput" accept="image/*">
+            <div id="photoPreviewRow" style="display:none;">
+              <div class="photo-preview-cell">
+                <img class="photo-preview-img" id="photoPreviewThumb" alt="">
+                <span class="photo-preview-name" id="photoPreviewName"></span>
+                <button class="photo-remove-btn" id="removePhotoBtn">제거</button>
+              </div>
+            </div>
+          </div>
+          <!-- Library quick picks (populated from admin) -->
+          <div class="ios-card" style="margin-top:12px;" id="bgLibCard">
+            <div class="ios-section-label">라이브러리</div>
+            <div class="lib-quick" id="bgLibQuick"><span class="lib-empty">관리 탭에서 배경을 추가하세요</span></div>
+          </div>
+        </div>
+
+        <!-- Panel: 스티커 -->
+        <div id="panelSticker" class="edit-panel" style="padding:0;">
+          <div class="ios-card">
+            <div class="ios-section-label">스티커 추가</div>
+            <div class="ios-upload-row" id="stickerBtn">
+              <div class="ios-upload-row-icon icon-purple">🖼</div>
+              <span class="ios-upload-row-label">PNG 파일 올리기</span>
+              <span class="ios-upload-row-chev">›</span>
+            </div>
+            <input type="file" id="stickerInput" accept="image/png" multiple>
+            <!-- Library quick picks -->
+            <div id="stickerLibQuickWrap" style="border-top:0.5px solid var(--sep);">
+              <div class="lib-quick" id="stickerLibQuick"><span class="lib-empty">관리 탭에서 스티커를 추가하세요</span></div>
+            </div>
+          </div>
+          <div class="ios-card" style="margin-top:12px;">
+            <div class="ios-section-label">레이어</div>
+            <div class="layer-list" id="layerList">
+              <p class="empty-hint">추가한 스티커가 여기에 표시돼요.</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sideControls -->
+    </div><!-- /editor-layout -->
+  </div><!-- /tabEdit -->
+
+  <!-- ── 관리 탭 ── -->
+  <div id="tabAdmin" class="tab-panel">
+
+    <!-- Locked -->
+    <div id="adminLocked" class="admin-locked">
+      <div class="lock-icon">🔒</div>
+      <h2>관리자 페이지</h2>
+      <p>비밀번호를 입력해주세요</p>
+      <div class="admin-pw-wrap">
+        <input type="password" id="adminPwInput" placeholder="비밀번호" autocomplete="current-password">
+        <button class="admin-pw-btn" id="adminPwBtn">확인</button>
       </div>
+      <p id="adminPwError" class="admin-pw-error"></p>
     </div>
 
-    <!-- controls -->
-    <div class="side-stack">
+    <!-- Unlocked -->
+    <div id="adminUnlocked" style="display:none;padding:14px;">
 
-      <div class="card">
-        <span class="badge badge-mint">박스 크기 (mm)</span>
-        <div class="dim-row">
-          <div class="dim-field">
-            <label for="dimW">가로</label>
-            <div class="input-wrap">
-              <input type="number" id="dimW" value="200" min="20" max="2000" step="1" inputmode="numeric">
-              <span class="unit">mm</span>
-            </div>
-          </div>
-          <div class="dim-field">
-            <label for="dimD">세로</label>
-            <div class="input-wrap">
-              <input type="number" id="dimD" value="150" min="20" max="2000" step="1" inputmode="numeric">
-              <span class="unit">mm</span>
-            </div>
-          </div>
-          <div class="dim-field">
-            <label for="dimH">높이</label>
-            <div class="input-wrap">
-              <input type="number" id="dimH" value="100" min="20" max="2000" step="1" inputmode="numeric">
-              <span class="unit">mm</span>
-            </div>
-          </div>
-        </div>
-        <p class="help-text">숫자를 바꾸면 박스 크기가 바로 반영돼요.</p>
+      <div class="admin-logout-row">
+        <span>관리자 모드</span>
+        <button class="admin-logout-btn" id="adminLogoutBtn">로그아웃</button>
       </div>
 
-      <div class="card">
-        <span class="badge badge-peach">배경 사진</span>
-        <div class="row-gap">
-          <button class="btn" id="photoBtn" type="button">사진 업로드</button>
-          <button class="btn btn-ghost" id="removePhotoBtn" type="button" style="display:none;">기본 흰색으로</button>
-        </div>
-        <input type="file" id="photoInput" accept="image/*">
-        <div class="preview-row" id="photoPreviewRow" style="display:none;">
-          <img class="preview-thumb" id="photoPreviewThumb" alt="업로드한 배경 사진">
-          <span class="preview-name" id="photoPreviewName"></span>
-        </div>
-        <p class="help-text">올린 사진은 박스 6면에 모두 동일하게 입혀져요.</p>
-      </div>
-
-      <div class="card">
-        <span class="badge badge-lav">스티커 (PNG)</span>
-        <div class="row-gap">
-          <button class="btn" id="stickerBtn" type="button">스티커 추가</button>
-        </div>
-        <input type="file" id="stickerInput" accept="image/png" multiple>
-        <p class="help-text">박스 위의 스티커를 직접 드래그하면 위치를 옮길 수 있어요.</p>
-        <div class="layer-list" id="layerList">
-          <p class="empty-hint">추가한 스티커가 여기에 표시돼요.</p>
+      <!-- 스티커 라이브러리 -->
+      <div class="ios-card" style="padding:14px 16px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">스티커 라이브러리</div>
+        <button class="admin-add-btn" id="libStickerUploadBtn">+ 스티커 추가 (PNG)</button>
+        <input type="file" id="libStickerInput" accept="image/png" multiple>
+        <div class="admin-lib-grid" id="libStickerGrid">
+          <p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>
         </div>
       </div>
 
-      <div class="card">
-        <span class="badge badge-sky">저장된 목업</span>
-        <div class="gallery-grid" id="galleryList">
-          <p class="gallery-loading empty-hint">불러오는 중...</p>
+      <!-- 배경사진 라이브러리 -->
+      <div class="ios-card" style="padding:14px 16px;margin-top:12px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:10px;">배경사진 라이브러리</div>
+        <button class="admin-add-btn" id="libBgUploadBtn">+ 배경사진 추가</button>
+        <input type="file" id="libBgInput" accept="image/*" multiple>
+        <div class="admin-lib-grid" id="libBgGrid">
+          <p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>
         </div>
       </div>
 
+      <!-- 샘플 -->
+      <div class="ios-card" style="padding:14px 16px;margin-top:12px;margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:6px;">샘플</div>
+        <p style="font-size:13px;color:var(--label2);margin:0 0 10px;">편집 화면의 현재 상태(배경+스티커 위치)를 샘플로 저장합니다.</p>
+        <button class="admin-add-btn" id="libSampleAddBtn">+ 현재 상태를 샘플로 저장</button>
+        <div class="sample-grid" id="libSampleGrid">
+          <p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>
+        </div>
+      </div>
+
+    </div><!-- /adminUnlocked -->
+
+  </div><!-- /tabAdmin -->
+
+</div><!-- /ios-content -->
+
+<!-- Crop modal -->
+<div class="crop-overlay" id="cropOverlay">
+  <div class="crop-modal">
+    <div class="crop-modal-head">
+      <h3>자르기</h3>
+    </div>
+    <div class="crop-modal-body">
+      <p>모서리 점을 드래그해서 영역을 선택하세요.</p>
+      <div class="crop-image-wrap" id="cropImageWrap">
+        <img id="cropImage" src="" alt="">
+        <div class="crop-rect" id="cropRect">
+          <div class="crop-handle nw" data-handle="nw"></div>
+          <div class="crop-handle ne" data-handle="ne"></div>
+          <div class="crop-handle sw" data-handle="sw"></div>
+          <div class="crop-handle se" data-handle="se"></div>
+        </div>
+      </div>
+    </div>
+    <div class="crop-modal-foot">
+      <button class="crop-reset" id="cropResetBtn" type="button">원본</button>
+      <button id="cropCancelBtn" type="button">취소</button>
+      <button id="cropApplyBtn" type="button">적용</button>
     </div>
   </div>
 </div>
+
+<!-- Tab bar -->
+<div class="ios-tabbar">
+  <button class="tab-item active" data-tab="edit">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/>
+    </svg>
+    <span>편집</span>
+  </button>
+  <button class="tab-item" data-tab="admin">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    <span>관리</span>
+  </button>
+</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -342,6 +807,7 @@
   function animate(){
     requestAnimationFrame(animate);
     render();
+    updateBBoxOverlay();
   }
   animate();
 
@@ -375,11 +841,8 @@
     boxMesh.geometry = new THREE.BoxGeometry(w,h,d);
 
     stickers.forEach(function(s){
-      var halfW = w/2 - s.mesh.userData.halfW;
-      var halfH = h/2 - s.mesh.userData.halfH;
-      s.mesh.position.x = clamp(s.mesh.position.x, -halfW, halfW);
-      s.mesh.position.y = clamp(s.mesh.position.y, -halfH, halfH);
-      s.mesh.position.z = d/2 + s.mesh.userData.epsilon;
+      orientHolder(s);
+      clampStickerPosition(s);
     });
 
     fitCamera();
@@ -398,7 +861,7 @@
 
   photoBtn.addEventListener('click', function(){ photoInput.click(); });
 
-  photoInput.addEventListener('change', function(e){
+  photoInput.addEventListener('change', function(e){ currentBgSrc = null;
     var file = e.target.files[0];
     if(!file) return;
     var reader = new FileReader();
@@ -441,6 +904,47 @@
   var stickerBtn = document.getElementById('stickerBtn');
   var stickerInput = document.getElementById('stickerInput');
   var layerListEl = document.getElementById('layerList');
+  var selectedStickerId = null;
+
+  // each face: which world axis it sits on, which side (+/-1), the rotation that
+  // orients a front-facing plane (normal +z) to that face, and which box dimensions
+  // ('w'=x, 'h'=y, 'd'=z) map to the plane's local x/y (width/height) on that face.
+  var faceDefs = {
+    front:  {axis:'z', sign: 1, rot:[0, 0, 0],         dimKeys:['w','h']},
+    back:   {axis:'z', sign:-1, rot:[0, Math.PI, 0],   dimKeys:['w','h']},
+    right:  {axis:'x', sign: 1, rot:[0, Math.PI/2, 0], dimKeys:['d','h']},
+    left:   {axis:'x', sign:-1, rot:[0,-Math.PI/2, 0], dimKeys:['d','h']},
+    top:    {axis:'y', sign: 1, rot:[-Math.PI/2, 0, 0],dimKeys:['w','d']},
+    bottom: {axis:'y', sign:-1, rot:[ Math.PI/2, 0, 0],dimKeys:['w','d']}
+  };
+  var faceAxisDim = {x:'w', y:'h', z:'d'};
+  var faceNames = {front:'앞면', back:'뒷면', top:'윗면', bottom:'아랫면', left:'왼쪽면', right:'오른쪽면'};
+
+  function getFaceSize(faceKey){
+    var def = faceDefs[faceKey];
+    return { width: currentDims[def.dimKeys[0]], height: currentDims[def.dimKeys[1]] };
+  }
+
+  // positions & rotates a sticker's holder group so it sits flush on its assigned face
+  function orientHolder(s){
+    var def = faceDefs[s.face];
+    s.group.rotation.set(def.rot[0], def.rot[1], def.rot[2]);
+    var half = currentDims[faceAxisDim[def.axis]]/2 + s.epsilon;
+    var pos = new THREE.Vector3(0,0,0);
+    if(def.axis === 'x'){ pos.x = def.sign*half; }
+    else if(def.axis === 'y'){ pos.y = def.sign*half; }
+    else { pos.z = def.sign*half; }
+    s.group.position.copy(pos);
+  }
+
+  // keeps a sticker's in-face position within the bounds of its current face
+  function clampStickerPosition(s){
+    var size = getFaceSize(s.face);
+    var halfW = size.width/2 - (s.baseW/2)*s.scale;
+    var halfH = size.height/2 - (s.baseH/2)*s.scale;
+    s.mesh.position.x = clamp(s.mesh.position.x, -halfW, halfW);
+    s.mesh.position.y = clamp(s.mesh.position.y, -halfH, halfH);
+  }
 
   stickerBtn.addEventListener('click', function(){ stickerInput.click(); });
 
@@ -448,6 +952,47 @@
     Array.prototype.forEach.call(e.target.files, function(f){ addStickerFromFile(f); });
     e.target.value = '';
   });
+
+  // (re)builds the textured plane + outline for a sticker; reused for first creation and after a crop
+  function buildStickerMesh(s, dataUrl){
+    var tex = new THREE.TextureLoader().load(dataUrl, function(){ render(); });
+    if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
+
+    if(s.mesh){
+      s.mesh.geometry.dispose();
+      s.mesh.geometry = new THREE.PlaneGeometry(s.baseW, s.baseH);
+      if(s.mesh.material.map){ s.mesh.material.map.dispose(); }
+      s.mesh.material.map = tex;
+      s.mesh.material.needsUpdate = true;
+      refreshOutlineGeometry(s);
+    } else {
+      var mat = new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false});
+      var geo = new THREE.PlaneGeometry(s.baseW, s.baseH);
+      s.mesh = new THREE.Mesh(geo, mat);
+      s.mesh.renderOrder = 10 + s.order;
+
+      var outlineSrc = new THREE.PlaneGeometry(s.baseW, s.baseH);
+      s.outline = new THREE.LineSegments(
+        new THREE.EdgesGeometry(outlineSrc),
+        new THREE.LineBasicMaterial({color:0xFF7FA0, transparent:true, opacity:0, depthTest:false})
+      );
+      outlineSrc.dispose();
+      s.outline.position.z = 0.5;
+      s.outline.renderOrder = 1000 + s.order;
+      s.mesh.add(s.outline);
+
+      s.group.add(s.mesh);
+    }
+    s.mesh.scale.set(s.scale, s.scale, 1);
+  }
+
+  function refreshOutlineGeometry(s){
+    if(!s.outline) return;
+    var src = new THREE.PlaneGeometry(s.baseW, s.baseH);
+    s.outline.geometry.dispose();
+    s.outline.geometry = new THREE.EdgesGeometry(src);
+    src.dispose();
+  }
 
   function addStickerFromFile(file){
     var reader = new FileReader();
@@ -461,35 +1006,39 @@
         if(aspect >= 1){ pw = baseSize; ph = baseSize/aspect; }
         else { ph = baseSize; pw = baseSize*aspect; }
 
-        var tex = new THREE.TextureLoader().load(dataUrl, function(){ render(); });
-        if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
-
-        var mat = new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false});
-        var geo = new THREE.PlaneGeometry(pw, ph);
-        var mesh = new THREE.Mesh(geo, mat);
-
-        var idx = stickers.length;
-        var epsilon = 0.6 + idx*0.5;
-        mesh.userData.halfW = pw/2;
-        mesh.userData.halfH = ph/2;
-        mesh.userData.epsilon = epsilon;
-        mesh.position.set(0, 0, currentDims.d/2 + epsilon);
-        mesh.renderOrder = 10 + idx;
-
-        boxGroup.add(mesh);
-
-        var layer = {
+        var order = stickers.length;
+        var s = {
           id: 's' + Date.now() + Math.random().toString(16).slice(2),
-          mesh: mesh,
-          thumb: dataUrl,
-          name: '스티커 ' + (stickers.length + 1)
+          name: '스티커 ' + (stickers.length + 1),
+          group: new THREE.Group(),
+          mesh: null,
+          outline: null,
+          order: order,
+          epsilon: 0.6 + order*0.5,
+          face: 'front',
+          baseW: pw,
+          baseH: ph,
+          scale: 1,
+          spin: 0,
+          originalSrc: dataUrl,
+          currentSrc: dataUrl,
+          thumb: dataUrl
         };
-        stickers.push(layer);
+        boxGroup.add(s.group);
+        buildStickerMesh(s, dataUrl);
+        orientHolder(s);
+        stickers.push(s);
         renderLayerList();
+        selectSticker(s.id);
       };
       img.src = dataUrl;
     };
     reader.readAsDataURL(file);
+  }
+
+  function findSticker(id){
+    for(var i=0;i<stickers.length;i++){ if(stickers[i].id === id) return stickers[i]; }
+    return null;
   }
 
   function renderLayerList(){
@@ -504,6 +1053,9 @@
     stickers.forEach(function(s){
       var row = document.createElement('div');
       row.className = 'layer-item';
+      row.style.cursor = 'pointer';
+      if(s.id === selectedStickerId){ row.style.boxShadow = '0 0 0 2px var(--primary) inset'; }
+      row.addEventListener('click', function(){ selectSticker(s.id); });
 
       var img = document.createElement('img');
       img.className = 'layer-thumb';
@@ -513,7 +1065,7 @@
 
       var name = document.createElement('span');
       name.className = 'layer-name';
-      name.textContent = s.name;
+      name.textContent = s.name + ' · ' + faceNames[s.face];
       row.appendChild(name);
 
       var removeBtn = document.createElement('button');
@@ -521,7 +1073,7 @@
       removeBtn.type = 'button';
       removeBtn.textContent = '\u2715';
       removeBtn.setAttribute('aria-label', s.name + ' 삭제');
-      removeBtn.addEventListener('click', function(){ removeSticker(s.id); });
+      removeBtn.addEventListener('click', function(ev){ ev.stopPropagation(); removeSticker(s.id); });
       row.appendChild(removeBtn);
 
       layerListEl.appendChild(row);
@@ -532,19 +1084,305 @@
     var idx = stickers.findIndex(function(s){ return s.id === id; });
     if(idx === -1) return;
     var s = stickers[idx];
-    boxGroup.remove(s.mesh);
+    boxGroup.remove(s.group);
     s.mesh.geometry.dispose();
+    if(s.outline){ s.outline.geometry.dispose(); s.outline.material.dispose(); }
     if(s.mesh.material.map){ s.mesh.material.map.dispose(); }
     s.mesh.material.dispose();
     stickers.splice(idx,1);
+    if(selectedStickerId === id){ selectSticker(null); }
     renderLayerList();
   }
 
-  // ---------- pointer interaction: rotate box or drag sticker ----------
+  // ---------- bbox overlay ----------
+  var stickerBBox    = document.getElementById('stickerBBox');
+  var bboxPoly       = document.getElementById('bboxPoly');
+  var bboxDelete     = document.getElementById('bboxDelete');
+  var bboxRotateHdl  = document.getElementById('bboxRotate');
+  var bboxCropHdl    = document.getElementById('bboxCrop');
+  var bboxResizeHdl  = document.getElementById('bboxResize');
+  var bboxEdgeT      = document.getElementById('bboxEdgeT');
+  var bboxEdgeB      = document.getElementById('bboxEdgeB');
+  var bboxEdgeL      = document.getElementById('bboxEdgeL');
+  var bboxEdgeR      = document.getElementById('bboxEdgeR');
+  var bboxFacePanel  = document.getElementById('bboxFacePanel');
+  var bboxAlignPanel = document.getElementById('bboxAlignPanel');
+  var bboxCenter     = {x:0, y:0};
+  var bboxDragMode   = null; // 'rotate' | 'resize'
+  var bboxDragData   = {};
+
+  function placeEl(el, pt){ el.style.left = pt.x + 'px'; el.style.top = pt.y + 'px'; }
+  function midPt(a, b){ return {x:(a.x+b.x)/2, y:(a.y+b.y)/2}; }
+
+  function updateBBoxOverlay(){
+    if(!stickerBBox) return; // animate() 첫 동기 실행 시 아직 미할당
+    if(!selectedStickerId){ stickerBBox.classList.remove('active'); return; }
+    var s = findSticker(selectedStickerId);
+    if(!s){ stickerBBox.classList.remove('active'); return; }
+
+    stickerBBox.classList.add('active');
+
+    var hw = s.baseW / 2 * s.scale;
+    var hh = s.baseH / 2 * s.scale;
+    var cs = Math.cos(s.spin), sn = Math.sin(s.spin);
+    var mx = s.mesh.position.x, my = s.mesh.position.y;
+
+    // 4 corners in group local space (spin already applied via mesh.rotation.z)
+    var corners = [
+      {x: mx + (-hw)*cs - (+hh)*sn, y: my + (-hw)*sn + (+hh)*cs}, // TL
+      {x: mx + (+hw)*cs - (+hh)*sn, y: my + (+hw)*sn + (+hh)*cs}, // TR
+      {x: mx + (+hw)*cs - (-hh)*sn, y: my + (+hw)*sn + (-hh)*cs}, // BR
+      {x: mx + (-hw)*cs - (-hh)*sn, y: my + (-hw)*sn + (-hh)*cs}  // BL
+    ];
+
+    var W = canvas.clientWidth, H = canvas.clientHeight;
+    var pts2d = corners.map(function(c){
+      var v = new THREE.Vector3(c.x, c.y, 0);
+      s.group.localToWorld(v);
+      v.project(camera);
+      return { x: (v.x+1)/2*W, y: (-v.y+1)/2*H };
+    });
+
+    var ptTL=pts2d[0], ptTR=pts2d[1], ptBR=pts2d[2], ptBL=pts2d[3];
+    bboxCenter = { x:(ptTL.x+ptBR.x)/2, y:(ptTL.y+ptBR.y)/2 };
+
+    bboxPoly.setAttribute('points', pts2d.map(function(p){return p.x+','+p.y;}).join(' '));
+    placeEl(bboxDelete,   ptTL);
+    placeEl(bboxRotateHdl,ptTR);
+    placeEl(bboxCropHdl,  ptBL);
+    placeEl(bboxResizeHdl,ptBR);
+    placeEl(bboxEdgeT, midPt(ptTL,ptTR));
+    placeEl(bboxEdgeB, midPt(ptBL,ptBR));
+    placeEl(bboxEdgeL, midPt(ptTL,ptBL));
+    placeEl(bboxEdgeR, midPt(ptTR,ptBR));
+  }
+
+  function selectSticker(id){
+    selectedStickerId = id;
+    stickers.forEach(function(s){ s.outline.material.opacity = 0; });
+    if(id){
+      var s = findSticker(id);
+      stickerBBox.classList.add('active');
+      bboxFacePanel.classList.add('active');
+      bboxAlignPanel.classList.add('active');
+      Array.prototype.forEach.call(bboxFacePanel.querySelectorAll('.sp-face-btn'), function(btn){
+        btn.classList.toggle('is-active', btn.getAttribute('data-face') === s.face);
+      });
+      updateBBoxOverlay();
+    } else {
+      stickerBBox.classList.remove('active');
+      bboxFacePanel.classList.remove('active');
+      bboxAlignPanel.classList.remove('active');
+    }
+    renderLayerList();
+  }
+
+  // ── bbox handle actions ──
+  bboxDelete.addEventListener('click', function(){
+    if(selectedStickerId){ removeSticker(selectedStickerId); }
+  });
+
+  var nudgeAmount = 5;
+  bboxEdgeT.addEventListener('click', function(){ nudgeSelected(0, nudgeAmount); });
+  bboxEdgeB.addEventListener('click', function(){ nudgeSelected(0, -nudgeAmount); });
+  bboxEdgeL.addEventListener('click', function(){ nudgeSelected(-nudgeAmount, 0); });
+  bboxEdgeR.addEventListener('click', function(){ nudgeSelected(nudgeAmount, 0); });
+  function nudgeSelected(dx, dy){
+    var s = findSticker(selectedStickerId);
+    if(!s) return;
+    s.mesh.position.x += dx; s.mesh.position.y += dy;
+    clampStickerPosition(s);
+  }
+
+  // ── rotate handle drag ──
+  bboxRotateHdl.addEventListener('pointerdown', function(e){
+    e.stopPropagation();
+    var s = findSticker(selectedStickerId); if(!s) return;
+    bboxDragMode = 'rotate';
+    var cr = canvas.getBoundingClientRect();
+    var cx = bboxCenter.x + cr.left, cy = bboxCenter.y + cr.top;
+    bboxDragData = { initialSpin: s.spin, initialAngle: Math.atan2(e.clientY-cy, e.clientX-cx) };
+    try{ bboxRotateHdl.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  bboxRotateHdl.addEventListener('pointermove', function(e){
+    if(bboxDragMode !== 'rotate') return;
+    var s = findSticker(selectedStickerId); if(!s) return;
+    var cr = canvas.getBoundingClientRect();
+    var angle = Math.atan2(e.clientY - bboxCenter.y - cr.top, e.clientX - bboxCenter.x - cr.left);
+    s.spin = bboxDragData.initialSpin + (angle - bboxDragData.initialAngle);
+    s.mesh.rotation.z = s.spin;
+  });
+  bboxRotateHdl.addEventListener('pointerup',     function(){ bboxDragMode = null; });
+  bboxRotateHdl.addEventListener('pointercancel', function(){ bboxDragMode = null; });
+
+  // ── resize handle drag ──
+  bboxResizeHdl.addEventListener('pointerdown', function(e){
+    e.stopPropagation();
+    var s = findSticker(selectedStickerId); if(!s) return;
+    bboxDragMode = 'resize';
+    var cr = canvas.getBoundingClientRect();
+    var cx = bboxCenter.x + cr.left, cy = bboxCenter.y + cr.top;
+    bboxDragData = {
+      initialScale: s.scale,
+      initialDist: Math.hypot(e.clientX - cx, e.clientY - cy) || 1
+    };
+    try{ bboxResizeHdl.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  bboxResizeHdl.addEventListener('pointermove', function(e){
+    if(bboxDragMode !== 'resize') return;
+    var s = findSticker(selectedStickerId); if(!s) return;
+    var cr = canvas.getBoundingClientRect();
+    var dist = Math.hypot(e.clientX - bboxCenter.x - cr.left, e.clientY - bboxCenter.y - cr.top);
+    s.scale = clamp(bboxDragData.initialScale * (dist / bboxDragData.initialDist), 0.05, 5);
+    s.mesh.scale.set(s.scale, s.scale, 1);
+    clampStickerPosition(s);
+  });
+  bboxResizeHdl.addEventListener('pointerup',     function(){ bboxDragMode = null; });
+  bboxResizeHdl.addEventListener('pointercancel', function(){ bboxDragMode = null; });
+
+  // ── face selector ──
+  Array.prototype.forEach.call(bboxFacePanel.querySelectorAll('.sp-face-btn'), function(btn){
+    btn.addEventListener('click', function(){
+      var s = findSticker(selectedStickerId); if(!s) return;
+      s.face = btn.getAttribute('data-face');
+      orientHolder(s); clampStickerPosition(s);
+      Array.prototype.forEach.call(bboxFacePanel.querySelectorAll('.sp-face-btn'), function(b){
+        b.classList.toggle('is-active', b === btn);
+      });
+      renderLayerList();
+    });
+  });
+
+  // ── alignment buttons ──
+  document.getElementById('alignLeft').addEventListener('click', function(){
+    var s = findSticker(selectedStickerId); if(!s) return;
+    s.mesh.position.x = -(getFaceSize(s.face).width/2 - s.baseW*s.scale/2);
+    clampStickerPosition(s);
+  });
+  document.getElementById('alignCenterH').addEventListener('click', function(){
+    var s = findSticker(selectedStickerId); if(!s) return;
+    s.mesh.position.x = 0;
+  });
+  document.getElementById('alignRight').addEventListener('click', function(){
+    var s = findSticker(selectedStickerId); if(!s) return;
+    s.mesh.position.x = getFaceSize(s.face).width/2 - s.baseW*s.scale/2;
+    clampStickerPosition(s);
+  });
+  document.getElementById('alignMiddle').addEventListener('click', function(){
+    var s = findSticker(selectedStickerId); if(!s) return;
+    s.mesh.position.y = 0;
+  });
+
+  // ---------- crop ----------
+  var cropOverlay = document.getElementById('cropOverlay');
+  var cropImage = document.getElementById('cropImage');
+  var cropRectEl = document.getElementById('cropRect');
+  var cropTargetId = null;
+  var cropRect = {x:0,y:0,w:0,h:0};
+
+  bboxCropHdl.addEventListener('click', function(){
+    var s = findSticker(selectedStickerId);
+    if(!s) return;
+    openCropModal(s, s.currentSrc);
+  });
+  document.getElementById('cropResetBtn').addEventListener('click', function(){
+    var s = findSticker(cropTargetId);
+    if(!s) return;
+    openCropModal(s, s.originalSrc);
+  });
+
+  function openCropModal(s, srcUrl){
+    cropTargetId = s.id;
+    cropImage.onload = function(){
+      var rect = cropImage.getBoundingClientRect();
+      cropRect = {x:0, y:0, w:rect.width, h:rect.height};
+      layoutCropRect();
+    };
+    cropImage.src = srcUrl;
+    cropOverlay.classList.add('active');
+  }
+
+  function layoutCropRect(){
+    cropRectEl.style.left = cropRect.x + 'px';
+    cropRectEl.style.top = cropRect.y + 'px';
+    cropRectEl.style.width = cropRect.w + 'px';
+    cropRectEl.style.height = cropRect.h + 'px';
+  }
+
+  function clampCropRect(){
+    var bounds = cropImage.getBoundingClientRect();
+    cropRect.w = clamp(cropRect.w, 24, bounds.width);
+    cropRect.h = clamp(cropRect.h, 24, bounds.height);
+    cropRect.x = clamp(cropRect.x, 0, bounds.width - cropRect.w);
+    cropRect.y = clamp(cropRect.y, 0, bounds.height - cropRect.h);
+  }
+
+  var cropDrag = null;
+  cropRectEl.addEventListener('pointerdown', function(e){
+    var handle = e.target.getAttribute && e.target.getAttribute('data-handle');
+    cropDrag = { mode: handle || 'move', startX:e.clientX, startY:e.clientY,
+      orig:{x:cropRect.x, y:cropRect.y, w:cropRect.w, h:cropRect.h} };
+    try{ cropRectEl.setPointerCapture(e.pointerId); }catch(err){}
+    e.stopPropagation();
+  });
+  cropRectEl.addEventListener('pointermove', function(e){
+    if(!cropDrag) return;
+    var dx = e.clientX - cropDrag.startX, dy = e.clientY - cropDrag.startY;
+    var o = cropDrag.orig;
+    if(cropDrag.mode === 'move'){
+      cropRect.x = o.x + dx; cropRect.y = o.y + dy;
+    } else if(cropDrag.mode === 'se'){
+      cropRect.w = o.w + dx; cropRect.h = o.h + dy;
+    } else if(cropDrag.mode === 'nw'){
+      cropRect.x = o.x + dx; cropRect.y = o.y + dy; cropRect.w = o.w - dx; cropRect.h = o.h - dy;
+    } else if(cropDrag.mode === 'ne'){
+      cropRect.y = o.y + dy; cropRect.w = o.w + dx; cropRect.h = o.h - dy;
+    } else if(cropDrag.mode === 'sw'){
+      cropRect.x = o.x + dx; cropRect.w = o.w - dx; cropRect.h = o.h + dy;
+    }
+    clampCropRect();
+    layoutCropRect();
+  });
+  function endCropDrag(){ cropDrag = null; }
+  cropRectEl.addEventListener('pointerup', endCropDrag);
+  cropRectEl.addEventListener('pointercancel', endCropDrag);
+
+  document.getElementById('cropCancelBtn').addEventListener('click', function(){
+    cropOverlay.classList.remove('active');
+    cropTargetId = null;
+  });
+
+  document.getElementById('cropApplyBtn').addEventListener('click', function(){
+    var s = findSticker(cropTargetId);
+    if(!s){ cropOverlay.classList.remove('active'); return; }
+    var dispRect = cropImage.getBoundingClientRect();
+    var scaleX = cropImage.naturalWidth / dispRect.width;
+    var scaleY = cropImage.naturalHeight / dispRect.height;
+    var sx = cropRect.x*scaleX, sy = cropRect.y*scaleY;
+    var sw = Math.max(1, cropRect.w*scaleX), sh = Math.max(1, cropRect.h*scaleY);
+
+    var canvasEl = document.createElement('canvas');
+    canvasEl.width = Math.round(sw);
+    canvasEl.height = Math.round(sh);
+    canvasEl.getContext('2d').drawImage(cropImage, sx, sy, sw, sh, 0, 0, canvasEl.width, canvasEl.height);
+    var newDataUrl = canvasEl.toDataURL('image/png');
+
+    s.baseH = s.baseW * (canvasEl.height / canvasEl.width);
+    s.currentSrc = newDataUrl;
+    s.thumb = newDataUrl;
+    buildStickerMesh(s, newDataUrl);
+    clampStickerPosition(s);
+    renderLayerList();
+
+    cropOverlay.classList.remove('active');
+    cropTargetId = null;
+  });
+
+  // ---------- pointer interaction: rotate box, or select/drag a sticker ----------
   var raycaster = new THREE.Raycaster();
   var pointerNDC = new THREE.Vector2();
   var dragPlane = new THREE.Plane();
-  var draggingSticker = null;
+  var draggingSticker = null; // sticker data object (not the mesh)
   var isRotating = false;
   var lastX = 0, lastY = 0;
 
@@ -554,6 +1392,9 @@
   }
 
   viewerFrame.addEventListener('pointerdown', function(e){
+    // bbox 오버레이·페이스 패널·정렬 패널 내부 클릭은 무시
+    if(stickerBBox.contains(e.target) || bboxFacePanel.contains(e.target) || bboxAlignPanel.contains(e.target)) return;
+
     var rect = canvas.getBoundingClientRect();
     setPointerNDC(e, rect);
     raycaster.setFromCamera(pointerNDC, camera);
@@ -562,10 +1403,13 @@
     var hits = stickerMeshes.length ? raycaster.intersectObjects(stickerMeshes, false) : [];
 
     if(hits.length > 0){
-      draggingSticker = hits[0].object;
+      var hitMesh = hits[0].object;
+      var s = stickers.find(function(st){ return st.mesh === hitMesh; });
+      draggingSticker = s;
+      selectSticker(s.id);
       var worldPos = new THREE.Vector3();
-      draggingSticker.getWorldPosition(worldPos);
-      var worldNormal = new THREE.Vector3(0,0,1).transformDirection(draggingSticker.matrixWorld).normalize();
+      hitMesh.getWorldPosition(worldPos);
+      var worldNormal = new THREE.Vector3(0,0,1).transformDirection(hitMesh.matrixWorld).normalize();
       dragPlane.setFromNormalAndCoplanarPoint(worldNormal, worldPos);
     } else {
       isRotating = true;
@@ -583,11 +1427,10 @@
       var ix = new THREE.Vector3();
       var hit = raycaster.ray.intersectPlane(dragPlane, ix);
       if(hit){
-        var local = boxGroup.worldToLocal(ix.clone());
-        var halfW = currentDims.w/2 - draggingSticker.userData.halfW;
-        var halfH = currentDims.h/2 - draggingSticker.userData.halfH;
-        draggingSticker.position.x = clamp(local.x, -halfW, halfW);
-        draggingSticker.position.y = clamp(local.y, -halfH, halfH);
+        var local = draggingSticker.group.worldToLocal(ix.clone());
+        draggingSticker.mesh.position.x = local.x;
+        draggingSticker.mesh.position.y = local.y;
+        clampStickerPosition(draggingSticker);
       }
     } else if(isRotating){
       var dx = e.clientX - lastX, dy = e.clientY - lastY;
@@ -709,7 +1552,7 @@
   }
 
   // ---------- save 3-face image (downloads + adds to gallery) ----------
-  var downloadBtn = document.getElementById('downloadBtn');
+  var downloadBtn = document.getElementById('downloadBtnViewer');
   downloadBtn.addEventListener('click', function(){
     var prevX = boxGroup.rotation.x, prevY = boxGroup.rotation.y;
     boxGroup.rotation.x = -0.45;
@@ -729,6 +1572,263 @@
       });
     });
   });
+
+  // ---------- Tab switching ----------
+  Array.prototype.forEach.call(document.querySelectorAll('.tab-item'), function(btn){
+    btn.addEventListener('click', function(){
+      var tab = btn.getAttribute('data-tab');
+      document.querySelectorAll('.tab-item').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active', p.id === 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1)); });
+    });
+  });
+
+  // Segmented control
+  Array.prototype.forEach.call(document.querySelectorAll('#editSegment .seg-btn'), function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#editSegment .seg-btn').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      var panel = 'panel' + btn.getAttribute('data-panel').charAt(0).toUpperCase() + btn.getAttribute('data-panel').slice(1);
+      document.querySelectorAll('.edit-panel').forEach(function(p){ p.classList.toggle('active', p.id === panel); });
+    });
+  });
+
+  // Nav download mirrors viewer download
+  document.getElementById('downloadBtn').addEventListener('click', function(){
+    document.getElementById('downloadBtnViewer').click();
+  });
+
+  // ---------- Library storage ----------
+  var LIB_KEY = 'mockup_admin_lib_v1';
+  var adminLib = { stickers: [], backgrounds: [], samples: [] };
+
+  function saveLib(){
+    try{ storageSet(LIB_KEY, JSON.stringify(adminLib)); }catch(e){}
+  }
+  function loadLib(){
+    storageGet(LIB_KEY).then(function(v){
+      if(v){ try{ adminLib = JSON.parse(v); }catch(e){} }
+      renderLibStickers(); renderLibBgs(); renderLibSamples();
+      renderQuickStickers(); renderQuickBgs();
+    });
+  }
+  loadLib();
+
+  // ---------- Admin password ----------
+  var ADMIN_PW = 'hare';
+  var adminUnlockedState = false;
+
+  document.getElementById('adminPwBtn').addEventListener('click', checkPw);
+  document.getElementById('adminPwInput').addEventListener('keydown', function(e){ if(e.key==='Enter') checkPw(); });
+  function checkPw(){
+    var v = document.getElementById('adminPwInput').value;
+    if(v === ADMIN_PW){
+      adminUnlockedState = true;
+      document.getElementById('adminLocked').style.display = 'none';
+      document.getElementById('adminUnlocked').style.display = '';
+      document.getElementById('adminPwError').textContent = '';
+      document.getElementById('adminPwInput').value = '';
+    } else {
+      document.getElementById('adminPwError').textContent = '비밀번호가 틀렸어요.';
+      document.getElementById('adminPwInput').value = '';
+    }
+  }
+  document.getElementById('adminLogoutBtn').addEventListener('click', function(){
+    adminUnlockedState = false;
+    document.getElementById('adminLocked').style.display = '';
+    document.getElementById('adminUnlocked').style.display = 'none';
+  });
+
+  // ---------- Library: stickers ----------
+  document.getElementById('libStickerUploadBtn').addEventListener('click', function(){ document.getElementById('libStickerInput').click(); });
+  document.getElementById('libStickerInput').addEventListener('change', function(e){
+    Array.prototype.forEach.call(e.target.files, function(f){
+      var r = new FileReader();
+      r.onload = function(ev){
+        adminLib.stickers.push({ id: 's'+Date.now()+Math.random().toString(16).slice(2), name: f.name.replace(/\.[^.]+$/,''), dataUrl: ev.target.result });
+        saveLib(); renderLibStickers(); renderQuickStickers();
+      };
+      r.readAsDataURL(f);
+    });
+    e.target.value = '';
+  });
+
+  function renderLibStickers(){
+    var g = document.getElementById('libStickerGrid');
+    g.innerHTML = '';
+    if(!adminLib.stickers.length){ g.innerHTML='<p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>'; return; }
+    adminLib.stickers.forEach(function(item){
+      var d = document.createElement('div'); d.className='admin-thumb';
+      d.innerHTML = '<img src="'+item.dataUrl+'" alt="'+item.name+'"><span class="admin-thumb-name">'+item.name+'</span><button class="admin-thumb-del" data-id="'+item.id+'">✕</button>';
+      d.querySelector('.admin-thumb-del').addEventListener('click', function(){ adminLib.stickers = adminLib.stickers.filter(function(x){return x.id!==item.id;}); saveLib(); renderLibStickers(); renderQuickStickers(); });
+      g.appendChild(d);
+    });
+  }
+  function renderQuickStickers(){
+    var c = document.getElementById('stickerLibQuick');
+    c.innerHTML = '';
+    if(!adminLib.stickers.length){ c.innerHTML='<span class="lib-empty">관리 탭에서 스티커를 추가하세요</span>'; return; }
+    adminLib.stickers.forEach(function(item){
+      var btn = document.createElement('button'); btn.className='lib-thumb-btn';
+      btn.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span>'+item.name+'</span>';
+      btn.addEventListener('click', function(){ addStickerFromDataUrl(item.dataUrl, item.name); });
+      c.appendChild(btn);
+    });
+  }
+
+  // ---------- Library: backgrounds ----------
+  document.getElementById('libBgUploadBtn').addEventListener('click', function(){ document.getElementById('libBgInput').click(); });
+  document.getElementById('libBgInput').addEventListener('change', function(e){
+    Array.prototype.forEach.call(e.target.files, function(f){
+      var r = new FileReader();
+      r.onload = function(ev){
+        adminLib.backgrounds.push({ id: 'b'+Date.now()+Math.random().toString(16).slice(2), name: f.name.replace(/\.[^.]+$/,''), dataUrl: ev.target.result });
+        saveLib(); renderLibBgs(); renderQuickBgs();
+      };
+      r.readAsDataURL(f);
+    });
+    e.target.value = '';
+  });
+
+  function renderLibBgs(){
+    var g = document.getElementById('libBgGrid');
+    g.innerHTML = '';
+    if(!adminLib.backgrounds.length){ g.innerHTML='<p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>'; return; }
+    adminLib.backgrounds.forEach(function(item){
+      var d = document.createElement('div'); d.className='admin-thumb';
+      d.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span class="admin-thumb-name">'+item.name+'</span><button class="admin-thumb-del" data-id="'+item.id+'">✕</button>';
+      d.querySelector('.admin-thumb-del').addEventListener('click', function(){ adminLib.backgrounds = adminLib.backgrounds.filter(function(x){return x.id!==item.id;}); saveLib(); renderLibBgs(); renderQuickBgs(); });
+      g.appendChild(d);
+    });
+  }
+  function renderQuickBgs(){
+    var c = document.getElementById('bgLibQuick');
+    c.innerHTML = '';
+    if(!adminLib.backgrounds.length){ c.innerHTML='<span class="lib-empty">관리 탭에서 배경을 추가하세요</span>'; return; }
+    adminLib.backgrounds.forEach(function(item){
+      var btn = document.createElement('button'); btn.className='lib-thumb-btn';
+      btn.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span>'+item.name+'</span>';
+      btn.addEventListener('click', function(){ applyBackgroundDataUrl(item.dataUrl, item.name); });
+      c.appendChild(btn);
+    });
+  }
+
+  // ---------- Library: samples ----------
+  document.getElementById('libSampleAddBtn').addEventListener('click', function(){
+    var name = prompt('샘플 이름을 입력하세요', '샘플 '+(adminLib.samples.length+1));
+    if(!name) return;
+    // Capture current viewer as thumbnail
+    renderer.render(scene, camera);
+    var thumb = canvas.toDataURL('image/jpeg', 0.6);
+    var state = {
+      dims: { w: currentDims.w, h: currentDims.h, d: currentDims.d },
+      bgSrc: currentBgSrc || null,
+      stickers: stickers.map(function(s){ return {
+        src: s.currentSrc, name: s.name, face: s.face,
+        posX: s.mesh.position.x, posY: s.mesh.position.y,
+        scale: s.scale, spin: s.spin,
+        baseW: s.baseW, baseH: s.baseH
+      };})
+    };
+    adminLib.samples.push({ id: 'smp'+Date.now(), name: name, thumb: thumb, state: JSON.stringify(state) });
+    saveLib(); renderLibSamples();
+  });
+
+  function renderLibSamples(){
+    var g = document.getElementById('libSampleGrid');
+    g.innerHTML = '';
+    if(!adminLib.samples.length){ g.innerHTML='<p class="empty-hint" style="padding:0;grid-column:1/-1;">아직 없어요.</p>'; return; }
+    adminLib.samples.forEach(function(item){
+      var d = document.createElement('div'); d.className='sample-card';
+      d.innerHTML='<img src="'+item.thumb+'" alt="'+item.name+'"><div class="sample-card-name">'+item.name+'</div><button class="sample-apply-btn">적용</button>';
+      d.querySelector('.sample-apply-btn').addEventListener('click', function(){ applySample(item); });
+      var delBtn = document.createElement('button');
+      delBtn.className='admin-thumb-del'; delBtn.style.cssText='position:absolute;top:4px;left:4px;'; delBtn.textContent='✕';
+      delBtn.addEventListener('click', function(){ adminLib.samples=adminLib.samples.filter(function(x){return x.id!==item.id;}); saveLib(); renderLibSamples(); });
+      d.appendChild(delBtn);
+      g.appendChild(d);
+    });
+  }
+
+  function applySample(item){
+    try{
+      var state = JSON.parse(item.state);
+      // Apply dims
+      document.getElementById('dimW').value = state.dims.w;
+      document.getElementById('dimD').value = state.dims.d;
+      document.getElementById('dimH').value = state.dims.h;
+      updateBoxSize();
+      // Apply background
+      if(state.bgSrc){ applyBackgroundDataUrl(state.bgSrc, ''); }
+      // Clear existing stickers
+      stickers.slice().forEach(function(s){ removeSticker(s.id); });
+      // Apply stickers (simplified restore)
+      state.stickers.forEach(function(sd){
+        var img = new Image();
+        img.onload = function(){
+          var order = stickers.length;
+          var s = {
+            id: 's'+Date.now()+Math.random().toString(16).slice(2),
+            name: sd.name, group: new THREE.Group(), mesh: null, outline: null,
+            order: order, epsilon: 0.6+order*0.5, face: sd.face,
+            baseW: sd.baseW, baseH: sd.baseH, scale: sd.scale, spin: sd.spin,
+            originalSrc: sd.src, currentSrc: sd.src, thumb: sd.src
+          };
+          boxGroup.add(s.group);
+          buildStickerMesh(s, sd.src);
+          orientHolder(s);
+          s.mesh.position.set(sd.posX, sd.posY, 0);
+          s.mesh.rotation.z = sd.spin;
+          s.mesh.scale.set(sd.scale, sd.scale, 1);
+          stickers.push(s);
+          renderLayerList();
+        };
+        img.src = sd.src;
+      });
+      // Switch to edit tab
+      document.querySelector('.tab-item[data-tab="edit"]').click();
+    } catch(e){ console.error('샘플 적용 오류', e); }
+  }
+
+  // helper: add sticker from dataUrl
+  function addStickerFromDataUrl(dataUrl, name){
+    var img = new Image();
+    img.onload = function(){
+      var aspect = img.width / img.height;
+      var baseSize = Math.min(currentDims.w, currentDims.h) * 0.28;
+      var pw = aspect >= 1 ? baseSize : baseSize * aspect;
+      var ph = aspect >= 1 ? baseSize / aspect : baseSize;
+      var order = stickers.length;
+      var s = {
+        id: 's'+Date.now()+Math.random().toString(16).slice(2),
+        name: name || ('스티커 '+(stickers.length+1)),
+        group: new THREE.Group(), mesh: null, outline: null,
+        order: order, epsilon: 0.6+order*0.5, face: 'front',
+        baseW: pw, baseH: ph, scale: 1, spin: 0,
+        originalSrc: dataUrl, currentSrc: dataUrl, thumb: dataUrl
+      };
+      boxGroup.add(s.group);
+      buildStickerMesh(s, dataUrl);
+      orientHolder(s);
+      stickers.push(s);
+      renderLayerList();
+      selectSticker(s.id);
+    };
+    img.src = dataUrl;
+  }
+
+  // helper: apply background from dataUrl
+  var currentBgSrc = null;
+  function applyBackgroundDataUrl(dataUrl, name){
+    currentBgSrc = dataUrl;
+    var tex = new THREE.TextureLoader().load(dataUrl, function(){ render(); });
+    if(tex.encoding !== undefined){ tex.encoding = THREE.sRGBEncoding; }
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    boxMaterials.forEach(function(m){ m.map = tex; m.needsUpdate = true; });
+    if(name){ document.getElementById('photoPreviewName').textContent = name; }
+    document.getElementById('photoPreviewRow').style.display = '';
+    document.getElementById('photoPreviewThumb').src = dataUrl;
+    document.getElementById('removePhotoBtn').style.display = '';
+  }
+
 
 })();
 </script>
