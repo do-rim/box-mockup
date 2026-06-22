@@ -173,6 +173,7 @@ body{
 .viewer-card{background:var(--bg2);border-radius:var(--radius);overflow:hidden;}
 .viewer-frame{
   position:relative;width:100%;aspect-ratio:4/3;
+  min-height:260px;
   background:radial-gradient(circle at 50% 42%,#333a43 0%,#1f242b 58%,#12161b 100%);
   overflow:hidden;cursor:grab;
 }
@@ -241,18 +242,43 @@ body{
 .photo-preview-name{font-size:13px;color:var(--label2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .photo-remove-btn{border:none;background:none;color:var(--red);font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;padding:4px;white-space:nowrap;}
 
+@media(max-width:520px){
+  .viewer-frame{min-height:220px;}
+}
+
 /* Quick-apply library (thumbnails) */
-.lib-quick{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;scrollbar-width:none;}
-.lib-quick::-webkit-scrollbar{display:none;}
+.lib-quick{display:grid;gap:8px;padding:10px 14px;}
 .lib-thumb-btn{
-  flex-shrink:0;width:56px;border:none;background:none;cursor:pointer;
+  width:64px;border:none;background:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:5px;
   border-radius:10px;overflow:hidden;
 }
-.lib-thumb-btn img{width:56px;height:56px;object-fit:contain;border-radius:10px;border:0.5px solid var(--sep);background:var(--gray6);padding:4px;}
-.lib-thumb-btn span{font-size:10px;color:var(--label2);max-width:60px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lib-thumb-btn img{width:64px;height:64px;object-fit:contain;border-radius:10px;border:0.5px solid var(--sep);background:var(--gray6);padding:4px;}
+.lib-thumb-btn span{font-size:10px;color:var(--label2);max-width:64px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lib-thumb-btn:active{opacity:.6;}
 .lib-empty{font-size:12px;color:var(--label3);padding:8px 14px;}
+.lib-quick-folder{border-top:0.5px solid var(--sep);}
+.lib-quick-folder:first-child{border-top:none;}
+.lib-quick-folder-head{
+  width:100%;border:none;background:none;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  padding:9px 0 7px;
+  font-family:var(--font);color:var(--label);
+}
+.lib-quick-folder-icon{
+  width:18px;flex-shrink:0;text-align:center;
+  color:var(--label2);font-size:12px;line-height:1;
+}
+.lib-quick-folder-name{
+  flex:1;text-align:left;font-size:13px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lib-quick-folder-count{font-size:11px;font-weight:600;color:var(--label2);}
+.lib-quick-folder-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));
+  gap:10px 8px;padding:2px 0 10px;
+}
+.lib-quick-folder.is-collapsed .lib-quick-folder-grid{display:none;}
 .lib-folder-row{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;}
 .lib-folder-row::-webkit-scrollbar{display:none;}
 .lib-folder-btn{
@@ -904,8 +930,16 @@ input[type="file"]{display:none;}
     applyCameraDistance();
   }
   function fitCamera(){
-    var maxDim = Math.max(currentDims.w, currentDims.h, currentDims.d);
-    baseCameraDistance = maxDim*2.45 + 110;
+    var aspect = camera.aspect || 4/3;
+    var verticalFov = THREE.MathUtils.degToRad(camera.fov);
+    var horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
+    var fitFov = Math.min(verticalFov, horizontalFov);
+    var radius = Math.sqrt(
+      currentDims.w * currentDims.w +
+      currentDims.h * currentDims.h +
+      currentDims.d * currentDims.d
+    ) / 2;
+    baseCameraDistance = Math.max(220, (radius / Math.sin(fitFov / 2)) * 1.24);
     applyCameraDistance();
   }
   fitCamera();
@@ -925,6 +959,7 @@ input[type="file"]{display:none;}
     renderer.setSize(w,h,false);
     camera.aspect = w/h;
     camera.updateProjectionMatrix();
+    fitCamera();
   });
   ro.observe(viewerFrame);
 
@@ -1789,6 +1824,7 @@ input[type="file"]{display:none;}
   var LIB_KEY = 'mockup_admin_lib_v1';
   var adminLib = { stickerFolders: [], backgrounds: [], samples: [] };
   var activeStickerFolderId = null;
+  var quickStickerFolderCollapsed = {};
 
   function makeDefaultStickerFolders(){
     return [
@@ -1980,16 +2016,42 @@ input[type="file"]{display:none;}
     if(!hasSticker){ c.innerHTML='<span class="lib-empty">관리 탭에서 스티커를 추가하세요</span>'; return; }
     adminLib.stickerFolders.forEach(function(folder){
       if(!folder.stickers.length) return;
-      var title = document.createElement('div');
-      title.className = 'lib-folder-name';
-      title.textContent = folder.name;
-      c.appendChild(title);
+      if(quickStickerFolderCollapsed[folder.id] === undefined){ quickStickerFolderCollapsed[folder.id] = true; }
+      var folderWrap = document.createElement('div');
+      folderWrap.className = 'lib-quick-folder' + (quickStickerFolderCollapsed[folder.id] ? ' is-collapsed' : '');
+
+      var title = document.createElement('button');
+      title.type = 'button';
+      title.className = 'lib-quick-folder-head';
+      title.setAttribute('aria-expanded', quickStickerFolderCollapsed[folder.id] ? 'false' : 'true');
+      var icon = document.createElement('span');
+      icon.className = 'lib-quick-folder-icon';
+      icon.textContent = quickStickerFolderCollapsed[folder.id] ? '\u25b6' : '\u25be';
+      title.appendChild(icon);
+      var name = document.createElement('span');
+      name.className = 'lib-quick-folder-name';
+      name.textContent = folder.name;
+      title.appendChild(name);
+      var count = document.createElement('span');
+      count.className = 'lib-quick-folder-count';
+      count.textContent = folder.stickers.length;
+      title.appendChild(count);
+      title.addEventListener('click', function(){
+        quickStickerFolderCollapsed[folder.id] = !quickStickerFolderCollapsed[folder.id];
+        renderQuickStickers();
+      });
+      folderWrap.appendChild(title);
+
+      var grid = document.createElement('div');
+      grid.className = 'lib-quick-folder-grid';
       folder.stickers.forEach(function(item){
         var btn = document.createElement('button'); btn.className='lib-thumb-btn';
         btn.innerHTML='<img src="'+item.dataUrl+'" alt="'+item.name+'"><span>'+item.name+'</span>';
         btn.addEventListener('click', function(){ addStickerFromDataUrl(item.dataUrl, item.name); });
-        c.appendChild(btn);
+        grid.appendChild(btn);
       });
+      folderWrap.appendChild(grid);
+      c.appendChild(folderWrap);
     });
   }
 
