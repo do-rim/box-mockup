@@ -262,6 +262,15 @@ body{
 }
 .lib-folder-btn.is-active{background:var(--blue);border-color:var(--blue);color:#fff;}
 .lib-folder-name{font-size:12px;font-weight:700;color:var(--label2);padding:0 14px 4px;}
+.lib-folder-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 10px;}
+.lib-folder-action{
+  border:0.5px solid var(--sep);background:var(--gray6);color:var(--label);
+  border-radius:9px;padding:9px 6px;font-family:var(--font);font-size:12px;font-weight:700;
+  cursor:pointer;
+}
+.lib-folder-action:active{opacity:.65;}
+.lib-folder-action.danger{color:var(--red);background:var(--red-bg);}
+.lib-folder-action:disabled{opacity:.35;cursor:default;}
 
 /* ── Admin tab ── */
 .admin-section{padding:14px;}
@@ -681,6 +690,11 @@ input[type="file"]{display:none;}
       <div class="ios-card" style="padding:14px 16px;">
         <div style="font-size:15px;font-weight:700;margin-bottom:10px;">스티커 라이브러리</div>
         <div class="lib-folder-row" id="libStickerFolderRow"></div>
+        <div class="lib-folder-actions">
+          <button class="lib-folder-action" id="libStickerFolderRenameBtn" type="button">이름 변경</button>
+          <button class="lib-folder-action" id="libStickerFolderEditBtn" type="button">수정</button>
+          <button class="lib-folder-action danger" id="libStickerFolderDeleteBtn" type="button">삭제</button>
+        </div>
         <button class="admin-add-btn" id="libStickerFolderAddBtn">+ 스타일 폴더 추가</button>
         <button class="admin-add-btn" id="libStickerUploadBtn">+ 스티커 추가 (PNG)</button>
         <input type="file" id="libStickerInput" accept="image/png" multiple>
@@ -1866,6 +1880,30 @@ input[type="file"]{display:none;}
       });
       row.appendChild(btn);
     });
+    updateStickerFolderActions();
+  }
+
+  function updateStickerFolderActions(){
+    var folder = getActiveStickerFolder();
+    var renameBtn = document.getElementById('libStickerFolderRenameBtn');
+    var editBtn = document.getElementById('libStickerFolderEditBtn');
+    var deleteBtn = document.getElementById('libStickerFolderDeleteBtn');
+    if(!renameBtn || !editBtn || !deleteBtn) return;
+    var disabled = !folder;
+    renameBtn.disabled = disabled;
+    editBtn.disabled = disabled;
+    deleteBtn.disabled = disabled || adminLib.stickerFolders.length <= 1;
+  }
+
+  function renameActiveStickerFolder(promptTitle){
+    var folder = getActiveStickerFolder();
+    if(!folder) return;
+    var name = prompt(promptTitle, folder.name);
+    if(!name) return;
+    folder.name = name.trim() || folder.name;
+    saveLib();
+    renderLibStickers();
+    renderQuickStickers();
   }
 
   document.getElementById('libStickerFolderAddBtn').addEventListener('click', function(){
@@ -1875,6 +1913,29 @@ input[type="file"]{display:none;}
     var folder = { id: 'style' + Date.now() + Math.random().toString(16).slice(2), name: name.trim(), stickers: [] };
     adminLib.stickerFolders.push(folder);
     activeStickerFolderId = folder.id;
+    saveLib();
+    renderLibStickers();
+    renderQuickStickers();
+  });
+
+  document.getElementById('libStickerFolderRenameBtn').addEventListener('click', function(){
+    renameActiveStickerFolder('변경할 폴더 이름을 입력하세요');
+  });
+  document.getElementById('libStickerFolderEditBtn').addEventListener('click', function(){
+    renameActiveStickerFolder('수정할 폴더 이름을 입력하세요');
+  });
+  document.getElementById('libStickerFolderDeleteBtn').addEventListener('click', function(){
+    var folder = getActiveStickerFolder();
+    if(!folder) return;
+    if(adminLib.stickerFolders.length <= 1){
+      alert('스타일 폴더는 최소 1개가 필요합니다.');
+      return;
+    }
+    if(!confirm('"' + folder.name + '" 폴더와 안의 스티커를 삭제할까요?')) return;
+    var idx = adminLib.stickerFolders.findIndex(function(item){ return item.id === folder.id; });
+    adminLib.stickerFolders = adminLib.stickerFolders.filter(function(item){ return item.id !== folder.id; });
+    var next = adminLib.stickerFolders[Math.min(idx, adminLib.stickerFolders.length - 1)] || adminLib.stickerFolders[0];
+    activeStickerFolderId = next.id;
     saveLib();
     renderLibStickers();
     renderQuickStickers();
